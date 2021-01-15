@@ -38,7 +38,7 @@ void point_head() {
 }
 
 void move_fetch() {
-    sleep(10);
+    sleep(15);
     int counter = 0;
     geometry_msgs::Twist vel;
     vel.angular.x = 0;
