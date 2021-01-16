@@ -44,7 +44,7 @@ int jcount = 0;
 bool publish_rectangle = true;
 std_msgs::Float32MultiArray toRosArray(std::vector<float> vertex);
 float distance (std::vector<float> v1, std::vector<float> v2);
-void publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
+bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
                               pcl::ModelCoefficients plane_coeffs);
 ros::Publisher pub, pub2, pub3, pub4, pub5, pub6;
 bool planar_seg(pcl::PointCloud<pcl::PointXYZ> &cloud);
@@ -75,6 +75,11 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     // Convert cloud to pcl::PointCloud<pcl::PointXYZ> format
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     pcl::fromPCLPointCloud2(filtered_cloud, *cloud);
+
+    if ((int)cloud->size() < 100) {
+        ROS_INFO("pointcloud too small, aborting");
+        return;
+    }
 
     // Downsample the pointcloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr downsampled_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
@@ -128,18 +133,22 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     int counter = 0;
 
     ROS_INFO("Read in cloud with %d points", (int)downsampled_cloud->size());
+
     while (planar_seg(*downsampled_cloud)) {
         ROS_INFO("Finished segmenting rectangle %d.", counter);
         counter ++;
     }
 
+    sleep(2); // Go two seconds between each pass of the algorithm
     return;
 }
 
 bool planar_seg (pcl::PointCloud<pcl::PointXYZ> &cloud) {
     // Determine whether to extract the rectangle or to return false
-    if ((int)cloud.size() < 100)
+    if ((int)cloud.size() < 100) {
+        ROS_INFO("pointcloud too small, aborting.");
         return false;
+    }
 
     // Estimate the normals
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloudptr (new pcl::PointCloud<pcl::PointXYZ>);
@@ -179,7 +188,9 @@ bool planar_seg (pcl::PointCloud<pcl::PointXYZ> &cloud) {
 
     // Find and publish the rectangle of best fit as a 2-triangle mesh
     ROS_INFO("Constructing rectangle from subcloud with %d points", (int)cloud_plane->size());
-    publish_fitted_rectangle(*cloud_plane, coefficients_plane);
+    if (not publish_fitted_rectangle(*cloud_plane, coefficients_plane)) {
+        return false;
+    }
 
     // Update cloud
     extract.setNegative(true);
@@ -191,7 +202,7 @@ bool planar_seg (pcl::PointCloud<pcl::PointXYZ> &cloud) {
     return true;
 }
 
-void publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
+bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
                               pcl::ModelCoefficients plane_coeffs) {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloudptr (new pcl::PointCloud<pcl::PointXYZ>);
     *cloudptr = cloud_plane;
@@ -246,8 +257,9 @@ void publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
     ROS_INFO("Boundary cloud has %d points", (int)boundary_cloud->size());
     if (boundary_cloud->size() < 150) {
         ROS_INFO("Aborting linear segmentation, boundary too small");
-        return;
+        return false;
     }
+
     // Do linear segmentation 4 times on the boundary points to get the edges, store equations of the edges
     pcl::ModelCoefficients coefficients_l1;
     pcl::PointIndices::Ptr inliers_l1 (new pcl::PointIndices);
@@ -317,6 +329,7 @@ void publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
 
     // Publish the mesh!
     create_rectangle(projected_l1, projected_l2, projected_l3, projected_l4);
+    return true;
 }
 
 void project_onto_plane(pcl::ModelCoefficients plane, pcl::ModelCoefficients line,
