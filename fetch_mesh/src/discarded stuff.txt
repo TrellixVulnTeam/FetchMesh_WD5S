@@ -1,0 +1,42 @@
+
+//    // Get rid of floor points
+//    // Estimate the normals
+//    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal> ());
+//    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+//    ne.setInputCloud (downsampled_cloud);
+//    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree_n (new pcl::search::KdTree<pcl::PointXYZ>());
+//    ne.setSearchMethod (tree_n);
+//    ne.setRadiusSearch (0.03);
+//    ne.compute (*cloud_normals);
+//
+//    // Create plane segmentation object and set parameters
+//    pcl::SACSegmentationFromNormals<pcl::PointXYZ, pcl::Normal> seg;
+//    seg.setOptimizeCoefficients (true);
+//    seg.setModelType (pcl::SACMODEL_NORMAL_PLANE);
+//    seg.setNormalDistanceWeight (0.1);
+//    seg.setMethodType (pcl::SAC_RANSAC);
+//    seg.setMaxIterations (100);
+//    seg.setDistanceThreshold (0.05);
+//    seg.setInputCloud (downsampled_cloud);
+//    seg.setInputNormals (cloud_normals);
+//
+//    // Obtain plane inliers and coefficients
+//    pcl::ModelCoefficients::Ptr coefficients_plane (new pcl::ModelCoefficients);
+//    pcl::PointIndices::Ptr inliers_plane (new pcl::PointIndices);
+//    seg.segment (*inliers_plane, *coefficients_plane);
+//
+//    // Extract plane inliers from the pointcloud
+//    pcl::ExtractIndices<pcl::PointXYZ> extract;
+//    extract.setInputCloud (downsampled_cloud);
+//    extract.setIndices (inliers_plane);
+//    extract.setNegative (true);
+//    pcl::PointCloud<pcl::PointXYZ>::Ptr extracted_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+//    extract.filter(*extracted_cloud);
+//
+//    // Do statistical outlier removal to get rid of any remaining weird bits
+//    pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sorfilter; // Initializing with true will allow us to extract the removed indices
+//    pcl::PointCloud<pcl::PointXYZ>::Ptr soRemoved (new pcl::PointCloud<pcl::PointXYZ>);
+//    sorfilter.setInputCloud(extracted_cloud);
+//    sorfilter.setMeanK(5);
+//    sorfilter.setStddevMulThresh(1.0);
+//    sorfilter.filter(*soRemoved);

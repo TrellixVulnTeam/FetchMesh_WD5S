@@ -12,6 +12,7 @@ from panda3d_viewer import Viewer, ViewerConfig
 class PointCloudViewer:
 
     def __init__(self):
+        print "started up the viewer"
         self.got_cloud = False
         self.got_boundary = False
         self.pcd_sub = rospy.Subscriber("fetch_pointcloud", Float32MultiArray, self.cloud_cb)
@@ -40,7 +41,7 @@ class PointCloudViewer:
             self.vertices.append(vertices.data[i])
 
         self.c2 += 1
-        print "read in vertex %d (%f, %f, %f)" % (self.c2, vertices.data[0], vertices.data[1], vertices.data[2])
+        print("read in vertex %d (%f, %f, %f)" % (self.c2, vertices.data[0], vertices.data[1], vertices.data[2]))
 
     def plane_cb(self, plane):
         if not self.got_plane:
@@ -126,7 +127,7 @@ class PointCloudViewer:
                 viewer.set_cloud_data('root', 'lines', linesegs, linecolors)
                 colors = np.ones((len(self.np_cloud), 4), np.float32)
                 for i in range(len(self.np_boundary)):
-                    if int(self.np_boundary[i]) < len(self.np_boundary):
+                    if int(self.np_boundary[i]) < len(self.np_cloud):
                         colors[int(self.np_boundary[i])][0] = 200
                 viewer.set_cloud_data('root', 'cloud', vertices, colors)
 
