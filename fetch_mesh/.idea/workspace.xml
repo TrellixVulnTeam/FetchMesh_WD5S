@@ -10,11 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f4538a58-f5d6-4c42-9264-698de580e704" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/better_viewer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/launch/simulation.launch" beforeDir="false" afterPath="$PROJECT_DIR$/launch/simulation.launch" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/planar_segmentation.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/planar_segmentation.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pointcloud_viewer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/pointcloud_viewer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +118,7 @@
       <workItem from="1610726154390" duration="5986000" />
       <workItem from="1610735824595" duration="1049000" />
       <workItem from="1610742580079" duration="34000" />
-      <workItem from="1610742648574" duration="7992000" />
+      <workItem from="1610742648574" duration="10868000" />
     </task>
     <servers />
   </component>

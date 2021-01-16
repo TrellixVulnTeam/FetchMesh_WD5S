@@ -32,6 +32,7 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/arithmetic/cross_product.hpp>
 #include <std_msgs/Float32MultiArray.h>
+#include <pcl/features/boundary.h>
 
 //TODO:
 //Find a way to test which points are being selected somehow
@@ -189,18 +190,42 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
     // Extract the boundary points using the threshold
     std_msgs::Float32MultiArray boundary_indices;
     pcl::PointCloud<pcl::PointXYZ>::Ptr boundary_cloud (new pcl::PointCloud<pcl::PointXYZ>);
-    for (int i=0; i<cloud_plane.size(); i++) {
-        found_indices.clear();
-        plane_tree->radiusSearch(cloud_plane.points[i], radius, found_indices, k_sqr_distances);
-        if (found_indices.size() < threshold) {
+//    for (int i=0; i<cloud_plane.size(); i++) {
+//        found_indices.clear();
+//        plane_tree->radiusSearch(cloud_plane.points[i], radius, found_indices, k_sqr_distances);
+//        if (found_indices.size() < threshold) {
+//            boundary_cloud->push_back(cloud_plane.points[i]);
+//            boundary_indices.data.push_back(i);
+//        }
+//    }
+
+    // NEW: extract boundary points using boundary estimation
+    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal> ());
+    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+    ne.setInputCloud (cloudptr);
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree_n (new pcl::search::KdTree<pcl::PointXYZ>);
+    ne.setSearchMethod (tree_n);
+    ne.setRadiusSearch (0.03);
+    ne.compute (*cloud_normals);
+    pcl::PointCloud<pcl::Boundary> boundaries;
+    pcl::BoundaryEstimation<pcl::PointXYZ, pcl::Normal, pcl::Boundary> est;
+    est.setInputCloud (cloudptr);
+    est.setInputNormals (cloud_normals);
+    est.setRadiusSearch (0.03);
+    est.setSearchMethod (typename pcl::search::KdTree<pcl::PointXYZ>::Ptr (new pcl::search::KdTree<pcl::PointXYZ>));
+    est.compute(boundaries);
+    // Send boundary points to panda3d visualizer
+    std_msgs::Float32MultiArray boundary_arr;
+    for (int i=0; i<cloudptr->size(); i++) {
+        if (boundaries.points[i].boundary_point == 1) {
             boundary_cloud->push_back(cloud_plane.points[i]);
-            boundary_indices.data.push_back(i);
+            boundary_arr.data.push_back(i);
         }
     }
+
     // Send pointcloud and rgb data to panda3d visualizer
     if (true) {
         std_msgs::Float32MultiArray pcd_arr;
-        std_msgs::Float32MultiArray boundary_arr;
         for (int i=0; i<(int)cloud_plane.size(); i++) {
             pcd_arr.data.push_back((float)(cloud_plane.points[i].x));
             pcd_arr.data.push_back((float)(cloud_plane.points[i].y));
@@ -208,7 +233,8 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
         }
 
         pub3.publish(pcd_arr);
-        pub4.publish(boundary_indices);
+        //pub4.publish(boundary_indices);
+        pub4.publish(boundary_arr);
         publish_rectangle = false;
     }
 
