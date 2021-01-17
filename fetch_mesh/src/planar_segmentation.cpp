@@ -57,6 +57,8 @@ std::vector<float> unit_vector(std::vector<float> vec);
 float magnitude(std::vector<float> vec);
 std::vector<float> intersect(pcl::ModelCoefficients l1, pcl::ModelCoefficients l2);
 geometry_msgs::Point toROSPoint(std::vector<float> input);
+bool close_to_cloud(std::vector<float> point, pcl::PointCloud<pcl::PointXYZ> &cloud);
+void export_mesh(std::vector<std::vector<float>> intersection_points);
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     // Convert from sensor_msgs::PointCloud2 to pcl::PCLPointCloud2
@@ -77,11 +79,6 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     pcl::fromPCLPointCloud2(filtered_cloud, *cloud);
 
-    if ((int)cloud->size() < 100) {
-        ROS_INFO("pointcloud too small, aborting");
-        return;
-    }
-
     // Downsample the pointcloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr downsampled_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     pcl::VoxelGrid<pcl::PointXYZ> voxel_ds;
@@ -89,7 +86,19 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     voxel_ds.setLeafSize(0.01f, 0.01f, 0.01f);
     voxel_ds.filter(*downsampled_cloud);
 
+//    // Do SOR on the pointcloud
+//    pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sorfilter; // Initializing with true will allow us to extract the removed indices
+//    pcl::PointCloud<pcl::PointXYZ>::Ptr soRemoved (new pcl::PointCloud<pcl::PointXYZ>);
+//    sorfilter.setInputCloud(cloud);
+//    sorfilter.setMeanK(5);
+//    sorfilter.setStddevMulThresh(1.0);
+//    sorfilter.filter(*soRemoved);
+
     int counter = 0;
+    if ((int)downsampled_cloud->size() < 1000) {
+        ROS_INFO("pointcloud too small, aborting");
+        return;
+    }
 
     ROS_INFO("Read in cloud with %d points", (int)downsampled_cloud->size());
 
@@ -165,39 +174,6 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
                               pcl::ModelCoefficients plane_coeffs) {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloudptr (new pcl::PointCloud<pcl::PointXYZ>);
     *cloudptr = cloud_plane;
-    // Find the centroid of cloud_plane, project onto the fitted plane
-    ROS_INFO("Publishing the fitted rectangle");
-
-    // Store the cloud_plane in a KD tree
-    pcl::search::KdTree<pcl::PointXYZ>::Ptr plane_tree (new pcl::search::KdTree<pcl::PointXYZ>());
-    plane_tree->setInputCloud(cloudptr);
-
-    // Generate threshold for point being on the boundary
-    float radius = 0.08;
-    float threshold = 0;
-    std::vector<int> found_indices;
-    std::vector<float> k_sqr_distances;
-    int random_index;
-    srand(time(NULL));
-    for(int i=0; i<(int)cloud_plane.size()/10; i++) {
-        random_index = rand() % (int)cloud_plane.size();
-        plane_tree->radiusSearch(cloud_plane.points[random_index], radius, found_indices, k_sqr_distances);
-        threshold += (float) found_indices.size();
-    }
-    threshold /= (float) (cloud_plane.size()/10);
-    threshold *= 0.75;
-
-    // Extract the boundary points using the threshold
-    std_msgs::Float32MultiArray boundary_indices;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr boundary_cloud (new pcl::PointCloud<pcl::PointXYZ>);
-//    for (int i=0; i<cloud_plane.size(); i++) {
-//        found_indices.clear();
-//        plane_tree->radiusSearch(cloud_plane.points[i], radius, found_indices, k_sqr_distances);
-//        if (found_indices.size() < threshold) {
-//            boundary_cloud->push_back(cloud_plane.points[i]);
-//            boundary_indices.data.push_back(i);
-//        }
-//    }
 
     // NEW: extract boundary points using boundary estimation
     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal> ());
@@ -214,7 +190,9 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
     est.setRadiusSearch (0.03);
     est.setSearchMethod (typename pcl::search::KdTree<pcl::PointXYZ>::Ptr (new pcl::search::KdTree<pcl::PointXYZ>));
     est.compute(boundaries);
-    // Send boundary points to panda3d visualizer
+
+    // Send boundary points to panda3d visualizer and fill up the boundary_cloud
+    pcl::PointCloud<pcl::PointXYZ>::Ptr boundary_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     std_msgs::Float32MultiArray boundary_arr;
     for (int i=0; i<cloudptr->size(); i++) {
         if (boundaries.points[i].boundary_point == 1) {
@@ -223,7 +201,7 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
         }
     }
 
-    // Send pointcloud and rgb data to panda3d visualizer
+    // Send pointcloud and boundary data to panda3d visualizer
     if (true) {
         std_msgs::Float32MultiArray pcd_arr;
         for (int i=0; i<(int)cloud_plane.size(); i++) {
@@ -231,7 +209,6 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
             pcd_arr.data.push_back((float)(cloud_plane.points[i].y));
             pcd_arr.data.push_back((float)(cloud_plane.points[i].z));
         }
-
         pub3.publish(pcd_arr);
         //pub4.publish(boundary_indices);
         pub4.publish(boundary_arr);
@@ -244,76 +221,144 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
         return false;
     }
 
-    // Do linear segmentation 4 times on the boundary points to get the edges, store equations of the edges
-    pcl::ModelCoefficients coefficients_l1;
-    pcl::PointIndices::Ptr inliers_l1 (new pcl::PointIndices);
-    pcl::ModelCoefficients coefficients_l2;
-    pcl::PointIndices::Ptr inliers_l2 (new pcl::PointIndices);
-    pcl::ModelCoefficients coefficients_l3;
-    pcl::PointIndices::Ptr inliers_l3 (new pcl::PointIndices);
-    pcl::ModelCoefficients coefficients_l4;
-    pcl::PointIndices::Ptr inliers_l4 (new pcl::PointIndices);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud3 (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud4 (new pcl::PointCloud<pcl::PointXYZ>);
-
+    // Initializing variables for linear segmentation
+    std::vector<pcl::ModelCoefficients> line_equations;
+    pcl::ModelCoefficients line;
+    pcl::PointIndices::Ptr line_inliers (new pcl::PointIndices);
     pcl::SACSegmentation<pcl::PointXYZ> seg;
     seg.setOptimizeCoefficients(true);
     seg.setModelType(pcl::SACMODEL_LINE);
     seg.setMethodType(pcl::SAC_RANSAC);
     seg.setDistanceThreshold(0.01);
-    seg.setInputCloud (boundary_cloud);
-
-    seg.segment(*inliers_l1, coefficients_l1); // finding inliers and coeffts of l1
     pcl::ExtractIndices<pcl::PointXYZ> extract;
     extract.setInputCloud (boundary_cloud);
-    extract.setIndices (inliers_l1);
+    extract.setIndices (line_inliers);
     extract.setNegative (true);
-    extract.filter(*cloud_f);
+    pcl::PointCloud<pcl::PointXYZ> updated_cloud;
 
-    seg.setInputCloud (cloud_f);
-    seg.segment(*inliers_l2, coefficients_l2); // l2
-    extract.setInputCloud(cloud_f);
-    extract.setIndices(inliers_l2);
-    extract.filter(*cloud2);
+    int counter = 1;
+    while (boundary_cloud->size() > 25) {
+        seg.setInputCloud (boundary_cloud);
+        seg.segment(*line_inliers, line);
+        line_equations.push_back(line);
 
-    ROS_INFO("Got through three lines...");
-    seg.setInputCloud (cloud2);
-    seg.segment(*inliers_l3, coefficients_l3); // l3
-    extract.setInputCloud(cloud2);
-    extract.setIndices(inliers_l3);
-    extract.filter(*cloud3);
+        // Update the boundary_cloud by extracting indices
+        extract.setInputCloud (boundary_cloud);
+        extract.setIndices (line_inliers);
+        extract.filter(updated_cloud);
+        ROS_INFO("updated cloud has %d points", updated_cloud.size());
+        *boundary_cloud = updated_cloud;
+        ROS_INFO("Segmented line %d, boundary now has %d points", counter, boundary_cloud->size());
+        // Reset updated_cloud, line, line_inliers, MIGHT NEED TO RESET LINE_INLIERS
+        updated_cloud.clear();
+        line.values.clear();
+        line_inliers->indices.clear();
+        counter ++;
+        if (boundary_cloud->size() < 25) {
+            ROS_INFO("Quitting the loop after segmenting %d lines, boundary cloud has length %d ", counter-1, (int)boundary_cloud->size());
+        }
+    }
 
-    seg.setInputCloud (cloud3);
-    seg.segment(*inliers_l4, coefficients_l4); // l4
-    ROS_INFO("got through all the lines");
-    // Project each edge line onto the fitted plane
-    pcl::ModelCoefficients projected_l1;
-    pcl::ModelCoefficients projected_l2;
-    pcl::ModelCoefficients projected_l3;
-    pcl::ModelCoefficients projected_l4;
-    project_onto_plane(plane_coeffs, coefficients_l1, projected_l1);
-    project_onto_plane(plane_coeffs, coefficients_l2, projected_l2);
-    project_onto_plane(plane_coeffs, coefficients_l3, projected_l3);
-    project_onto_plane(plane_coeffs, coefficients_l4, projected_l4);
+    if (line_equations.size() <= 2) {
+        ROS_INFO("pointcloud boundary is degenerate, too few edges, aborting...");
+        return false;
+    }
 
-    // Visualization feature: send projected_l(1-4) to the pointcloud viewer
-    pub5.publish(toRosArray(projected_l1.values));
-    pub5.publish(toRosArray(projected_l2.values));
-    pub5.publish(toRosArray(projected_l3.values));
-    pub5.publish(toRosArray(projected_l4.values));
+    // Project each line onto the plane
+    std::vector<pcl::ModelCoefficients> projected_line_equations;
+    pcl::ModelCoefficients projected_l;
+    for (int i=0; i<line_equations.size(); i++) {
+        project_onto_plane(plane_coeffs, line_equations[i], projected_l);
+        pub5.publish(toRosArray(projected_l.values));
+        projected_line_equations.push_back(projected_l);
+        projected_l.values.clear();
+    }
+
     pub6.publish(toRosArray(plane_coeffs.values));
-    // Calculate intersections of non "almost parallel" edges
-    // Note - non almost parallel algo should check one line with all of the other three, then pair the comparison line
-    // with whichever line had the smallest slope vector net change
-    // This'll be sloppy, but can get cleaned up later...
 
-    // Store the "rectangle" in a mesh
+    // Calculate intersection points between all lines, discard if they are far away from the pointcloud
+    std::vector<float> intersection_point;
+    std::vector<std::vector<float>> intersection_points;
+    for (int i=0; i<projected_line_equations.size() - 1; i++) {
+        for (int j=i+1; j<projected_line_equations.size(); j++) {
+            intersection_point = intersect(projected_line_equations[i], projected_line_equations[j]);
+            if (close_to_cloud(intersection_point, *cloudptr)) {
+                intersection_points.push_back(intersection_point);
+            }
+        }
+    }
 
-    // Publish the mesh!
-    create_rectangle(projected_l1, projected_l2, projected_l3, projected_l4);
+    if (intersection_points.size() < 3) {
+        ROS_INFO("pointcloud is degenerate, too few intersection points, aborting...");
+        return false;
+    }
+
+    // Export the mesh
+    ROS_INFO("Exporting the mesh...");
+    export_mesh(intersection_points);
+
     return true;
+}
+
+bool close_to_cloud(std::vector<float> point, pcl::PointCloud<pcl::PointXYZ> &cloud) {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloudptr (new pcl::PointCloud<pcl::PointXYZ>);
+    *cloudptr = cloud;
+
+    // Initializing variables
+    pcl::PointXYZ searchPoint;
+    searchPoint.x = point[0];
+    searchPoint.y = point[1];
+    searchPoint.z = point[2];
+
+    // Return false if there are nans or infs
+    if (not std::isfinite(searchPoint.x) or not std::isfinite(searchPoint.y) or not std::isfinite(searchPoint.z)) {
+        return false;
+    }
+
+    float radius = 0.02;
+    float threshold = 0;
+    std::vector<int> found_indices;
+    std::vector<float> k_sqr_distances;
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr plane_tree (new pcl::search::KdTree<pcl::PointXYZ>());
+    plane_tree->setInputCloud(cloudptr);
+
+    // Search in radius around the query point
+    plane_tree->radiusSearch(searchPoint, radius, found_indices, k_sqr_distances);
+
+    // Determine whether the point is close or not
+    if (found_indices.size() > 1) {
+        return true;
+    }
+
+    return false;
+}
+
+void export_mesh(std::vector<std::vector<float>> intersection_points) {
+    shape_msgs::Mesh output;
+    std::vector<geometry_msgs::Point > vertices;
+    std::vector<shape_msgs::MeshTriangle > polygons;
+
+    // Convert all the vertices to geometry_msgs::Point
+    for (int i=0; i<intersection_points.size(); i++) {
+        vertices.push_back(toROSPoint(intersection_points[i]));
+    }
+
+    // Construct each of the vertices Choose 3 triangles, put into polygons
+    shape_msgs::MeshTriangle triangle;
+    for (int i=0; i<intersection_points.size()-2; i++) {
+        for (int j=i+1; j<intersection_points.size()-1; j++) {
+            for (int k=j+1; k<intersection_points.size(); k++) {
+                triangle.vertex_indices[0] = i;
+                triangle.vertex_indices[1] = j;
+                triangle.vertex_indices[2] = k;
+                polygons.push_back(triangle);
+            }
+        }
+    }
+
+    output.triangles = polygons;
+    output.vertices = vertices;
+    pub.publish(output);
 }
 
 void project_onto_plane(pcl::ModelCoefficients plane, pcl::ModelCoefficients line,
@@ -350,105 +395,6 @@ void project_onto_plane(pcl::ModelCoefficients plane, pcl::ModelCoefficients lin
         projected_line.values.push_back(p1[i]);
     for (int i=0; i<3; i++)
         projected_line.values.push_back(line_vec[i]);
-}
-
-void create_rectangle(pcl::ModelCoefficients l1, pcl::ModelCoefficients l2, pcl::ModelCoefficients l3,
-                      pcl::ModelCoefficients l4) {
-    // Scale down each slope to a unit vector
-    std::vector<float> v1 = {l1.values[3], l1.values[4], l1.values[5]};
-    std::vector<float> unit_l1 = unit_vector(v1);
-    std::vector<float> v2 = {l2.values[3], l2.values[4], l2.values[5]};
-    std::vector<float> unit_l2 = unit_vector(v2);
-    std::vector<float> v3 = {l3.values[3], l3.values[4], l3.values[5]};
-    std::vector<float> unit_l3 = unit_vector(v3);
-    std::vector<float> v4 = {l4.values[3], l4.values[4], l4.values[5]};
-    std::vector<float> unit_l4 = unit_vector(v1);
-
-    // Add each other unit vector to l1, pair the two together which are the smallest magnitude away from the origin
-    std::vector<float> v12 = {v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]};
-    std::vector<float> v13 = {v1[0] - v3[0], v1[1] - v3[1], v1[2] - v3[2]};
-    std::vector<float> v14 = {v1[0] - v4[0], v1[1] - v4[1], v1[2] - v4[2]};
-
-    std::vector<float> vertex1;
-    std::vector<float> vertex2;
-    std::vector<float> vertex3;
-    std::vector<float> vertex4;
-    std::vector<float> vertex5;
-    if (magnitude(v12) < magnitude(v13) && magnitude(v12) < magnitude(v14)) {
-        vertex1 = intersect(l1, l3);
-        vertex2 = intersect(l1, l4);
-        vertex3 = intersect(l2, l3);
-        vertex4 = intersect(l2, l4);
-    }
-
-    else if (magnitude(v13) < magnitude(v12) && magnitude(v13) < magnitude(v14)) {
-        vertex1 = intersect(l1, l2);
-        vertex2 = intersect(l1, l4);
-        vertex3 = intersect(l3, l2);
-        vertex4 = intersect(l3, l4);
-    }
-
-    else {
-        vertex1 = intersect(l1, l3);
-        vertex2 = intersect(l1, l2);
-        vertex3 = intersect(l4, l3);
-        vertex4 = intersect(l2, l4);
-    }
-    // Probably temporary feature: publish the coords of vertices to a topic
-    pub2.publish(toRosArray(vertex1));
-    pub2.publish(toRosArray(vertex2));
-    pub2.publish(toRosArray(vertex3));
-    pub2.publish(toRosArray(vertex4));
-
-
-    // Figure out which vertices are diagonal to eachother.
-    int diagonal = 2;
-    int other1 = 3;
-    int other2 = 4;
-    float greatest_distance = distance(vertex1, vertex2);
-    float d3 = distance(vertex1, vertex3);
-    float d4 = distance(vertex1, vertex4);
-    if (d3 > greatest_distance) {
-        diagonal = 3;
-        greatest_distance = d3;
-        other1 = 2;
-        other2 = 4;
-    }
-    if (d4 > greatest_distance) {
-        diagonal = 4;
-        other1 = 2;
-        other2 = 3;
-    }
-
-    // Make the vertices into two triangles, publish these triangles as a mesh
-    shape_msgs::Mesh output;
-    std::vector<geometry_msgs::Point > verts;
-    std::vector<shape_msgs::MeshTriangle > polygons;
-
-    verts.push_back(toROSPoint(vertex1));
-    verts.push_back(toROSPoint(vertex2));
-    verts.push_back(toROSPoint(vertex3));
-    verts.push_back(toROSPoint(vertex4));
-
-    shape_msgs::MeshTriangle t1;
-    shape_msgs::MeshTriangle t2;
-
-    t1.vertex_indices[0] = 0 + 4*jcount;
-    t1.vertex_indices[1] = diagonal-1 + 4*jcount;
-    t1.vertex_indices[2] = other1-1 + 4*jcount;
-
-    t2.vertex_indices[0] = 0 + 4*jcount;
-    t2.vertex_indices[1] = diagonal-1 + 4*jcount;
-    t2.vertex_indices[2] = other2-1 + 4*jcount;
-
-    polygons.push_back(t1);
-    polygons.push_back(t2);
-
-    output.triangles = polygons;
-    output.vertices = verts;
-    pub.publish(output);
-    jcount ++;
-
 }
 
 float distance (std::vector<float> v1, std::vector<float> v2) {

@@ -18,8 +18,8 @@
 
   <!-- Oh, you wanted a robot? -->
   <include file="$(find fetch_gazebo)/launch/include/$(arg robot).launch.xml" />
-  <node name="fetch_mover" pkg="fetch_mesh" type="move_fetch" output="screen"/>
-  <node name="look_at_cubes" pkg="fetch_mesh" type="fetch_mover.py" output="screen"/>
+<!--  <node name="fetch_mover" pkg="fetch_mesh" type="move_fetch" output="screen"/>-->
+<!--  <node name="look_at_cubes" pkg="fetch_mesh" type="fetch_mover.py" output="screen"/>-->
   <node name="mesh_publisher" pkg="fetch_mesh" type="planar_segmentation" output="screen"/>
 
 </launch>
