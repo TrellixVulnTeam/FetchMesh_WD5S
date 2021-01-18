@@ -33,6 +33,7 @@
 #include <boost/geometry/arithmetic/cross_product.hpp>
 #include <std_msgs/Float32MultiArray.h>
 #include <pcl/features/boundary.h>
+#include <std_msgs/String.h>
 
 //TODO:
 //Find a way to test which points are being selected somehow
@@ -42,7 +43,7 @@
 
 namespace bg = boost::geometry;
 int jcount = 0;
-bool publish_rectangle = true;
+bool publish_rectangle = true, start_segmentation = true;
 std_msgs::Float32MultiArray toRosArray(std::vector<float> vertex);
 float distance (std::vector<float> v1, std::vector<float> v2);
 bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
@@ -59,8 +60,13 @@ std::vector<float> intersect(pcl::ModelCoefficients l1, pcl::ModelCoefficients l
 geometry_msgs::Point toROSPoint(std::vector<float> input);
 bool close_to_cloud(std::vector<float> point, pcl::PointCloud<pcl::PointXYZ> &cloud);
 void export_mesh(std::vector<std::vector<float>> intersection_points);
+void start_cb(std_msgs::String start);
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
+    if (not start_segmentation) {
+        return;
+    }
+    ROS_INFO("Starting segmentation...");
     // Convert from sensor_msgs::PointCloud2 to pcl::PCLPointCloud2
     pcl::PCLPointCloud2::Ptr cloud2 (new pcl::PCLPointCloud2 ());
     pcl_conversions::toPCL(*cloud_msg, *cloud2);
@@ -107,7 +113,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
         counter ++;
     }
 
-    sleep(2); // Go two seconds between each pass of the algorithm
+    //sleep(2); // Go two seconds between each pass of the algorithm
+    start_segmentation = false;
     return;
 }
 
@@ -343,7 +350,7 @@ void export_mesh(std::vector<std::vector<float>> intersection_points) {
         vertices.push_back(toROSPoint(intersection_points[i]));
     }
 
-    // Construct each of the vertices Choose 3 triangles, put into polygons
+    // Construct each of the (vertices choose 3) triangles, put into polygons
     shape_msgs::MeshTriangle triangle;
     for (int i=0; i<intersection_points.size()-2; i++) {
         for (int j=i+1; j<intersection_points.size()-1; j++) {
@@ -355,7 +362,10 @@ void export_mesh(std::vector<std::vector<float>> intersection_points) {
             }
         }
     }
-
+    if (polygons.size() >= 100) {
+        ROS_INFO("Too many triangles. Aborting");
+        return;
+    }
     output.triangles = polygons;
     output.vertices = vertices;
     pub.publish(output);
@@ -461,13 +471,21 @@ geometry_msgs::Point toROSPoint(std::vector<float> input) {
     return pt;
 }
 
+void start_cb(std_msgs::String start) {
+    start_segmentation = true;
+}
 int main(int argc, char **argv) {
     // Initialize ROS
     ros::init (argc, argv, "mesh_publisher");
     ros::NodeHandle nh;
     ROS_INFO("starting up the mesh_publisher...");
+
+    // Create a subscriber to tell script when to start segmentation
+    ros::Subscriber start_sub = nh.subscribe ("/start_segmentation", 5, start_cb);
+
     // Create a ROS subscriber for the input point cloud
     ros::Subscriber sub = nh.subscribe ("/head_camera/depth_registered/points", 5, cloud_cb);
+
     // Create a ROS publisher for the output mesh
     pub = nh.advertise<shape_msgs::Mesh> ("fetch_mesh", 5);
     pub2 = nh.advertise<std_msgs::Float32MultiArray> ("rectangle_vertices", 5);
@@ -475,7 +493,6 @@ int main(int argc, char **argv) {
     pub4 = nh.advertise<std_msgs::Float32MultiArray> ("fetch_pointcloud_rgb_data", 5);
     pub5 = nh.advertise<std_msgs::Float32MultiArray> ("line_equations", 5);
     pub6 = nh.advertise<std_msgs::Float32MultiArray> ("plane_equation", 5);
-
     // Spin
     ros::spin();
 }

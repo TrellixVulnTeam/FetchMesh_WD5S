@@ -12,6 +12,8 @@
     <list default="true" id="f4538a58-f5d6-4c42-9264-698de580e704" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/launch/simulation.launch" beforeDir="false" afterPath="$PROJECT_DIR$/launch/simulation.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fetch_mover.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fetch_mover.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/move_fetch.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/move_fetch.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/planar_segmentation.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/planar_segmentation.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
