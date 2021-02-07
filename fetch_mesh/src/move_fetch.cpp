@@ -42,10 +42,7 @@ void move_fetch() {
     // Go to (3,0). Turn 90 degrees. Go to (2,3) Segment. See what the mesh is looking like!
     // go right
 
-    // Start segmentation, turn 90 degrees
-    ROS_INFO("starting segmentation");
-    start_segmentation_pub.publish(start_segmentation);
-    ros::Duration(2).sleep();
+    // Turn 90 degrees
     endTime = ros::Time::now() + dur;
     while(ros::Time::now() < endTime ) {
         vel.angular.z = 0.6;
@@ -60,14 +57,21 @@ void move_fetch() {
         pub.publish(vel);
     }
 
-    // Turn head
+
+    // Turn head 90 degrees
     std_msgs::String point_head;
     point_head.data = "point_head";
     point_head_pub.publish(point_head);
-    ROS_INFO("finished pointing head, resuming the trajectory");
+    sleep(10);
+    ROS_INFO("finished pointing head, starting the trajectory");
+    ROS_INFO("starting segmentation");
+
+    // Start segmentation, turn 90 degrees
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(10);
 
     // go up
-    while(ros::ok() && current_pose.y < 0.9) {
+    while(ros::ok() && current_pose.y < 0.95) {
         ROS_INFO("I'm stuck inside this loop. heelllllp");
         vel.linear.x = 0.4;
         pub.publish(vel);
@@ -85,7 +89,7 @@ void move_fetch() {
     // Start segmentation
     ROS_INFO("More segmentation. Letss gooooo");
     start_segmentation_pub.publish(start_segmentation);
-    ros::Duration(2).sleep();
+    ros::Duration(4).sleep();
 
     // done with the loop!
     std_msgs::String done;
@@ -101,10 +105,8 @@ main (int argc, char **argv) {
     ros::NodeHandle nh;
     ROS_INFO("starting circuit around the environment...");
 
-    // Create a ROS subscriber for the input point cloud
+    // Set up odom subscribers and various controller publishers
     ros::Subscriber sub = nh.subscribe ("/odom", 5, odom_cb);
-
-    // Create a ROS publisher for the output mesh
     pub = nh.advertise<geometry_msgs::Twist> ("/cmd_vel", 5);
     pub2 = nh.advertise<std_msgs::String> ("/finished_trajectory", 4);
     start_segmentation_pub = nh.advertise<std_msgs::String> ("/start_segmentation", 5);

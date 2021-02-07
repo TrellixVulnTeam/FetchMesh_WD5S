@@ -4,6 +4,7 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <pcl_ros/transforms.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
@@ -34,16 +35,17 @@
 #include <std_msgs/Float32MultiArray.h>
 #include <pcl/features/boundary.h>
 #include <std_msgs/String.h>
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Pose2D.h>
+#include <tf/transform_listener.h>
+#include <tf2_ros/transform_listener.h>
 
 //TODO:
-//Find a way to test which points are being selected somehow
-// Find a way to test where the corner points of each rectangle are calculated by spawning in unity spheres to
-// corresponding locations overlayed with the larger mesh.
-// Figure out why the published meshes are incomplete and WAY too small.
+
 
 namespace bg = boost::geometry;
 int jcount = 0;
-bool publish_rectangle = true, start_segmentation = true;
+bool publish_rectangle = true, start_segmentation = false;
 std_msgs::Float32MultiArray toRosArray(std::vector<float> vertex);
 float distance (std::vector<float> v1, std::vector<float> v2);
 bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
@@ -61,11 +63,27 @@ geometry_msgs::Point toROSPoint(std::vector<float> input);
 bool close_to_cloud(std::vector<float> point, pcl::PointCloud<pcl::PointXYZ> &cloud);
 void export_mesh(std::vector<std::vector<float>> intersection_points);
 void start_cb(std_msgs::String start);
+void odom_cb(nav_msgs::Odometry odom);
+geometry_msgs::Pose2D current_pose;
+float transform_x, transform_y;
+tf::TransformListener *tf_listener = NULL;
+
+void odom_cb(nav_msgs::Odometry odom) {
+    current_pose.x = odom.pose.pose.position.x;
+    current_pose.y = odom.pose.pose.position.y;
+}
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     if (not start_segmentation) {
         return;
     }
+
+    start_segmentation = false;
+
+    // Set the transform variables
+    transform_x = current_pose.x;
+    transform_y = current_pose.y;
+
     ROS_INFO("Starting segmentation...");
     // Convert from sensor_msgs::PointCloud2 to pcl::PCLPointCloud2
     pcl::PCLPointCloud2::Ptr cloud2 (new pcl::PCLPointCloud2 ());
@@ -85,10 +103,17 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     pcl::fromPCLPointCloud2(filtered_cloud, *cloud);
 
+    // move from the /head_camera_rgb_optical_frame to /base_link or /world
+    // pcl_ros::transformPointCloud (const std::string &target_frame, const pcl::PointCloud< PointT > &cloud_in, pcl::PointCloud
+    // < PointT > &cloud_out, const tf::TransformListener &tf_listener
+    // might have to specify time and the fixed frame
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ> ());
+    pcl_ros::transformPointCloud("/base_link", *cloud, *cloud_out, *tf_listener);
+
     // Downsample the pointcloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr downsampled_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     pcl::VoxelGrid<pcl::PointXYZ> voxel_ds;
-    voxel_ds.setInputCloud(cloud);
+    voxel_ds.setInputCloud(cloud_out);
     voxel_ds.setLeafSize(0.01f, 0.01f, 0.01f);
     voxel_ds.filter(*downsampled_cloud);
 
@@ -114,7 +139,6 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     }
 
     //sleep(2); // Go two seconds between each pass of the algorithm
-    start_segmentation = false;
     return;
 }
 
@@ -348,6 +372,10 @@ void export_mesh(std::vector<std::vector<float>> intersection_points) {
     // Convert all the vertices to geometry_msgs::Point
     for (int i=0; i<intersection_points.size(); i++) {
         vertices.push_back(toROSPoint(intersection_points[i]));
+
+        // Correct for transform
+        vertices[i].x += transform_x;
+        vertices[i].y += transform_y;
     }
 
     // Construct each of the (vertices choose 3) triangles, put into polygons
@@ -362,7 +390,7 @@ void export_mesh(std::vector<std::vector<float>> intersection_points) {
             }
         }
     }
-    if (polygons.size() >= 100) {
+    if (polygons.size() >= 30) {
         ROS_INFO("Too many triangles. Aborting");
         return;
     }
@@ -472,27 +500,38 @@ geometry_msgs::Point toROSPoint(std::vector<float> input) {
 }
 
 void start_cb(std_msgs::String start) {
+    ROS_INFO("starting up segmentation algorithm");
     start_segmentation = true;
 }
+
 int main(int argc, char **argv) {
     // Initialize ROS
     ros::init (argc, argv, "mesh_publisher");
+    tf_listener = new (tf::TransformListener);
     ros::NodeHandle nh;
     ROS_INFO("starting up the mesh_publisher...");
 
-    // Create a subscriber to tell script when to start segmentation
+    // Create a subscriber to tell script when to start segmentation, subscribe to /odom
     ros::Subscriber start_sub = nh.subscribe ("/start_segmentation", 5, start_cb);
+    ros::Subscriber odom_sub = nh.subscribe ("/odom", 5, odom_cb);
 
     // Create a ROS subscriber for the input point cloud
     ros::Subscriber sub = nh.subscribe ("/head_camera/depth_registered/points", 5, cloud_cb);
 
     // Create a ROS publisher for the output mesh
     pub = nh.advertise<shape_msgs::Mesh> ("fetch_mesh", 5);
+
+    // Largely uneeded subscribers to link up with the python visualizer script
     pub2 = nh.advertise<std_msgs::Float32MultiArray> ("rectangle_vertices", 5);
     pub3 = nh.advertise<std_msgs::Float32MultiArray> ("fetch_pointcloud", 5);
     pub4 = nh.advertise<std_msgs::Float32MultiArray> ("fetch_pointcloud_rgb_data", 5);
     pub5 = nh.advertise<std_msgs::Float32MultiArray> ("line_equations", 5);
     pub6 = nh.advertise<std_msgs::Float32MultiArray> ("plane_equation", 5);
+
+
     // Spin
     ros::spin();
 }
+
+
+

@@ -1,17 +1,39 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(fetch_mesh)
 
+if(NOT CMAKE_VERSION VERSION_LESS 3.1)
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
+
+if(MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
+if( MINGW )
+    add_definitions(-DBT_NO_COROUTINES)
+endif()
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+set(CMAKE_CONFIG_PATH ${CMAKE_MODULE_PATH}  "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CONFIG_PATH}")
+
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  sensor_msgs
+        roscpp
+        rospy
+        sensor_msgs
+        tf
+        pcl_ros
 )
 
 ## System dependencies are found with CMake's conventions
@@ -153,6 +175,10 @@ target_link_libraries(move_fetch ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 add_executable(point_head src/point_head.cpp)
 target_link_libraries(point_head ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+
+add_executable(planar_segmentation_class src/planar_segmentation_class.cpp)
+target_link_libraries(planar_segmentation_class ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use

@@ -67,8 +67,8 @@ set(fetch_mesh_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(fetch_mesh_SOURCE_PREFIX /home/jacob/catkin_ws/src/fetch_mesh)
-  set(fetch_mesh_DEVEL_PREFIX /home/jacob/catkin_ws/src/fetch_mesh/cmake-build-debug/devel)
+  set(fetch_mesh_SOURCE_PREFIX /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh)
+  set(fetch_mesh_DEVEL_PREFIX /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel)
   set(fetch_mesh_INSTALL_PREFIX "")
   set(fetch_mesh_PREFIX ${fetch_mesh_DEVEL_PREFIX})
 else()

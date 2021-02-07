@@ -1,4 +1,4 @@
-prefix=/home/jacob/catkin_ws/src/fetch_mesh/cmake-build-debug/devel
+prefix=/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel
 
 Name: fetch_mesh
 Description: Description of fetch_mesh
