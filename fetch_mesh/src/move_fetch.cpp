@@ -14,49 +14,109 @@
 geometry_msgs::Pose2D current_pose;
 ros::Publisher pub, pub2, start_segmentation_pub, point_head_pub;
 void move_fetch();
+void simple_world_trajectory();
 void odom_cb(nav_msgs::Odometry odom);
+void stop();
+void turn90_ccw();
+void turn90_cw();
+void move_forward_to_point(double threshold, char axis);
 
 void odom_cb(nav_msgs::Odometry odom) {
     current_pose.x = odom.pose.pose.position.x;
     current_pose.y = odom.pose.pose.position.y;
 }
 
-void move_fetch() {
-    sleep(15);
-    int counter = 0;
+void stop() {
     geometry_msgs::Twist vel;
-    vel.angular.x = 0;
-    vel.angular.y = 0;
-    vel.angular.z = 0;
-    vel.linear.x = 0;
-    vel.linear.y = 0;
-    vel.linear.z = 0;
-    ros::Time beginTime;
-    ros::Duration dur = ros::Duration(4);
     ros::Duration stop_dur = ros::Duration(1);
     ros::Time endTime;
-    std_msgs::String start_segmentation;
-    start_segmentation.data = "start segmentation";
-    // Path outline:
-    // Start at (0,0). segment. Turn 90 degrees. Turn head. Go to (1,0). Segment
-    // Go to (3,0). Turn 90 degrees. Go to (2,3) Segment. See what the mesh is looking like!
-    // go right
+    endTime = ros::Time::now() + stop_dur;
+    while(ros::Time::now() < endTime) {
+        vel.angular.z = 0;
+        vel.linear.x = 0;
+        pub.publish(vel);
+    }
+}
 
-    // Turn 90 degrees
+// Make this much more exact, need to get the /odom for the rotation somehow
+void turn90_ccw() {
+    geometry_msgs::Twist vel;
+    ros::Time endTime;
+    ros::Duration dur = ros::Duration(4);
     endTime = ros::Time::now() + dur;
     while(ros::Time::now() < endTime ) {
         vel.angular.z = 0.6;
         pub.publish(vel);
         ros::Duration(0.1).sleep();
     }
+    stop();
+}
 
-    // Stop rotating
-    endTime = ros::Time::now() + stop_dur;
-    while(ros::Time::now() < endTime) {
-        vel.angular.z = 0;
+void turn90_cw() {
+    geometry_msgs::Twist vel;
+    ros::Time endTime;
+    ros::Duration dur = ros::Duration(4);
+    endTime = ros::Time::now() + dur;
+    while(ros::Time::now() < endTime ) {
+        vel.angular.z = -0.6;
         pub.publish(vel);
+        ros::Duration(0.1).sleep();
+    }
+    stop();
+}
+
+// axis must be 'x' or 'y' at this point
+// move forward until at the threshold along the chosen axis
+// have to adjust for cases when robot is above or below the threshold
+void move_forward_to_point(double threshold, char axis) {
+    geometry_msgs::Twist vel;
+    if (axis == 'x') {
+        if (threshold > current_pose.x) {
+            while(ros::ok() && current_pose.x < threshold) {
+                vel.linear.x = 0.4;
+                pub.publish(vel);
+                ros::spinOnce();
+                ros::Duration(0.1).sleep();
+            }
+        }
+
+        else if (threshold < current_pose.x) {
+            while(ros::ok() && current_pose.x > threshold) {
+                vel.linear.x = 0.4;
+                pub.publish(vel);
+                ros::spinOnce();
+                ros::Duration(0.1).sleep();
+            }
+        }
     }
 
+    else if (axis == 'y') {
+        if (threshold > current_pose.y) {
+            while(ros::ok() && current_pose.y < threshold) {
+                vel.linear.x = 0.4;
+                pub.publish(vel);
+                ros::spinOnce();
+                ros::Duration(0.1).sleep();
+            }
+        }
+
+        else if (threshold < current_pose.y) {
+            while(ros::ok() && current_pose.y > threshold) {
+                vel.linear.x = 0.4;
+                pub.publish(vel);
+                ros::spinOnce();
+                ros::Duration(0.1).sleep();
+            }
+        }
+    }
+
+    stop();
+}
+
+void simple_world_trajectory() {
+    sleep(25);
+    std_msgs::String start_segmentation;
+    start_segmentation.data = "start segmentation";
 
     // Turn head 90 degrees
     std_msgs::String point_head;
@@ -64,38 +124,109 @@ void move_fetch() {
     point_head_pub.publish(point_head);
     sleep(10);
     ROS_INFO("finished pointing head, starting the trajectory");
-    ROS_INFO("starting segmentation");
 
-    // Start segmentation, turn 90 degrees
+    // Start segmentation
+    turn90_ccw();
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(2);
+
+    // trajectory
+    move_forward_to_point(2.5, 'y');
+    turn90_cw();
+    move_forward_to_point(1.5, 'x');
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(2);
+    move_forward_to_point(4, 'x');
+    turn90_cw();
+    move_forward_to_point(0, 'y');
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(2);
+    move_forward_to_point(-2.5, 'y');
+    turn90_cw();
+    move_forward_to_point(1.5, 'x');
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(2);
+    return;
+}
+void move_fetch() {
+    sleep(15);
+    std_msgs::String start_segmentation;
+    start_segmentation.data = "start segmentation";
+
+    // Start segmentation
     start_segmentation_pub.publish(start_segmentation);
     sleep(10);
 
-    // go up
-    while(ros::ok() && current_pose.y < 0.95) {
-        ROS_INFO("I'm stuck inside this loop. heelllllp");
-        vel.linear.x = 0.4;
-        pub.publish(vel);
-        ros::spinOnce();
-        ros::Duration(0.1).sleep();
-    }
+    // turn 90 degrees counterclockwise
+    turn90_ccw();
 
-    // Stop moving
-    endTime = ros::Time::now() + stop_dur;
-    while(ros::Time::now() < endTime) {
-        vel.linear.x = 0;
-        pub.publish(vel);
-    }
+    // Turn head 90 degrees
+    std_msgs::String point_head;
+    point_head.data = "point_head";
+    point_head_pub.publish(point_head);
+    sleep(10);
+    ROS_INFO("finished pointing head, starting the trajectory");
+
+    // head up to (-1, 1)
+    move_forward_to_point(1, 'y');
 
     // Start segmentation
-    ROS_INFO("More segmentation. Letss gooooo");
     start_segmentation_pub.publish(start_segmentation);
-    ros::Duration(4).sleep();
+    sleep(10);
 
-    // done with the loop!
-    std_msgs::String done;
-    done.data = "done";
-    ROS_INFO("finished trajectory. lets hope this worked!");
-    pub2.publish(done);
+    // head up to (-1,2.5)
+    move_forward_to_point(2.5, 'y');
+
+    // turn 90 cw
+    turn90_cw();
+
+    // head over to (2, 2.5)
+    move_forward_to_point(2, 'x');
+
+    // Start segmentation
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(10);
+
+    // head over to (4, 1)
+    move_forward_to_point(4, 'x');
+    turn90_cw();
+    move_forward_to_point(1, 'y');
+
+    // Start segmentation
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(10);
+
+    // head to (4, 0)
+    move_forward_to_point(0, 'y');
+
+    // Start segmentation
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(10);
+
+    // head to (4, -1)
+    move_forward_to_point(-1, 'y');
+
+    // Start segmentation
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(10);
+
+    // head to (2, -2.5)
+    move_forward_to_point(-2.5, 'y');
+    turn90_cw();
+    move_forward_to_point(2, 'x');
+
+    // Start segmentation
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(10);
+
+    // head to (0, -1)
+    move_forward_to_point(0, 'x');
+    turn90_cw();
+    move_forward_to_point(-1, 'y');
+
+    // Start segmentation
+    start_segmentation_pub.publish(start_segmentation);
+    sleep(10);
 }
 
 int
@@ -113,7 +244,7 @@ main (int argc, char **argv) {
     point_head_pub = nh.advertise<std_msgs::String> ("/start_pointing_head", 5);
 
     // Start the trajectory
-    move_fetch();
+    simple_world_trajectory();
 
     // Spin
     ros::spin();

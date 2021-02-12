@@ -108,7 +108,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     // < PointT > &cloud_out, const tf::TransformListener &tf_listener
     // might have to specify time and the fixed frame
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ> ());
-    pcl_ros::transformPointCloud("/base_link", *cloud, *cloud_out, *tf_listener);
+    pcl_ros::transformPointCloud("/map", *cloud, *cloud_out, *tf_listener);
 
     // Downsample the pointcloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr downsampled_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
@@ -373,9 +373,9 @@ void export_mesh(std::vector<std::vector<float>> intersection_points) {
     for (int i=0; i<intersection_points.size(); i++) {
         vertices.push_back(toROSPoint(intersection_points[i]));
 
-        // Correct for transform
-        vertices[i].x += transform_x;
-        vertices[i].y += transform_y;
+//        // Correct for transform
+//        vertices[i].x += transform_x;
+//        vertices[i].y += transform_y;
     }
 
     // Construct each of the (vertices choose 3) triangles, put into polygons
