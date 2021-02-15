@@ -4,9 +4,9 @@
   <arg name="debug" default="false"/>
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
-  <arg name="world" default="$(find fetch_mesh)/world/simple_world.world"/>
+  <arg name="world" default="$(find fetch_mesh)/world/cube_room.world"/>
 
-  <!-- Start Gazebo with a blank world -->
+  <!-- Start Gazebo with a custom world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(arg world)"/>
     <arg name="debug" value="$(arg debug)" />
@@ -19,15 +19,21 @@
   <!-- Oh, you wanted a robot? -->
   <include file="$(find fetch_gazebo)/launch/include/$(arg robot).launch.xml" />
 
-  <!--  start slam algorithm to get the /map frame-->
-  <!--  rosrun gmapping slam_gmapping scan:=base_scan in terminal-->
-<!--  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">-->
-<!--    <param name="scan" value="/base_scan"/>-->
+
+<!--  The default fetch_navigation localization on prerecorded map-->
+  <include file="$(find fetch_navigation)/launch/fetch_nav.launch" >
+    <arg name="map_file" value="$(find fetch_mesh)/maps/room_map.yaml"/>
+  </include>
+<!--  <node pkg="gmapping" type="slam_gmapping" name="gmapping_thing" output="screen" >-->
+<!--    <remap from="scan" to="/base_scan" />-->
+<!--    <param name="odom_frame" value="/odom" />-->
+<!--    <param name="base_frame" value="/base_link" />-->
+<!--    <param name="angularUpdate" value="1.5"/>-->
 <!--  </node>-->
 
   <!--  start up scripts-->
   <node name="fetch_mover" pkg="fetch_mesh" type="move_fetch" output="screen"/>
-  <node name="look_at_cubes" pkg="fetch_mesh" type="fetch_mover.py" output="screen"/>
+<!--  <node name="look_at_cubes" pkg="fetch_mesh" type="fetch_mover.py" output="screen"/>-->
   <node name="mesh_publisher" pkg="fetch_mesh" type="planar_segmentation" output="screen"/>
 
 

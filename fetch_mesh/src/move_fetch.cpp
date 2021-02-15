@@ -9,9 +9,11 @@
 #include <nav_msgs/Odometry.h>
 #include <control_msgs/PointHeadAction.h>
 #include <std_msgs/String.h>
+#include <tf/transform_listener.h>
+tf::TransformListener *tf_listener = NULL;
 
 //typedef actionlib::SimpleActionClient<control_msgs::PointHeadAction> Client;
-geometry_msgs::Pose2D current_pose;
+geometry_msgs::PoseStamped current_pose;
 ros::Publisher pub, pub2, start_segmentation_pub, point_head_pub;
 void move_fetch();
 void simple_world_trajectory();
@@ -22,8 +24,11 @@ void turn90_cw();
 void move_forward_to_point(double threshold, char axis);
 
 void odom_cb(nav_msgs::Odometry odom) {
-    current_pose.x = odom.pose.pose.position.x;
-    current_pose.y = odom.pose.pose.position.y;
+    geometry_msgs::PoseStamped new_pose;
+    current_pose.header.frame_id = "/odom";
+    current_pose.pose = odom.pose.pose;
+    tf_listener->transformPose("/map", ros::Time(0), current_pose, "/odom", new_pose);
+    current_pose = new_pose;
 }
 
 void stop() {
@@ -65,14 +70,26 @@ void turn90_cw() {
     stop();
 }
 
+void turn45_cw() {
+    geometry_msgs::Twist vel;
+    ros::Time endTime;
+    ros::Duration dur = ros::Duration(2);
+    endTime = ros::Time::now() + dur;
+    while(ros::Time::now() < endTime ) {
+        vel.angular.z = -0.6;
+        pub.publish(vel);
+        ros::Duration(0.1).sleep();
+    }
+}
+
 // axis must be 'x' or 'y' at this point
 // move forward until at the threshold along the chosen axis
 // have to adjust for cases when robot is above or below the threshold
 void move_forward_to_point(double threshold, char axis) {
     geometry_msgs::Twist vel;
     if (axis == 'x') {
-        if (threshold > current_pose.x) {
-            while(ros::ok() && current_pose.x < threshold) {
+        if (threshold > current_pose.pose.position.x) {
+            while(ros::ok() && current_pose.pose.position.x < threshold) {
                 vel.linear.x = 0.4;
                 pub.publish(vel);
                 ros::spinOnce();
@@ -80,8 +97,8 @@ void move_forward_to_point(double threshold, char axis) {
             }
         }
 
-        else if (threshold < current_pose.x) {
-            while(ros::ok() && current_pose.x > threshold) {
+        else if (threshold < current_pose.pose.position.x) {
+            while(ros::ok() && current_pose.pose.position.x > threshold) {
                 vel.linear.x = 0.4;
                 pub.publish(vel);
                 ros::spinOnce();
@@ -91,8 +108,8 @@ void move_forward_to_point(double threshold, char axis) {
     }
 
     else if (axis == 'y') {
-        if (threshold > current_pose.y) {
-            while(ros::ok() && current_pose.y < threshold) {
+        if (threshold > current_pose.pose.position.y) {
+            while(ros::ok() && current_pose.pose.position.y < threshold) {
                 vel.linear.x = 0.4;
                 pub.publish(vel);
                 ros::spinOnce();
@@ -100,12 +117,12 @@ void move_forward_to_point(double threshold, char axis) {
             }
         }
 
-        else if (threshold < current_pose.y) {
-            while(ros::ok() && current_pose.y > threshold) {
+        else if (threshold < current_pose.pose.position.y) {
+            while(ros::ok() && current_pose.pose.position.y > threshold) {
                 vel.linear.x = 0.4;
                 pub.publish(vel);
                 ros::spinOnce();
-                ros::Duration(0.1).sleep();
+                //ros::Duration(0.1).sleep();
             }
         }
     }
@@ -113,8 +130,39 @@ void move_forward_to_point(double threshold, char axis) {
     stop();
 }
 
+// Spins fetch slowly 360 degrees to generate a map of the surroundings
+void full_circle_map() {
+    geometry_msgs::Twist vel;
+    ros::Time endTime;
+    ros::Duration dur = ros::Duration(16);
+    endTime = ros::Time::now() + dur;
+    while(ros::Time::now() < endTime ) {
+        vel.angular.z = 0.6;
+        pub.publish(vel);
+        ros::Duration(0.1).sleep();
+    }
+    stop();
+}
+
+// turn 360 degrees, stop to after rotating 45 degrees
+void full_circle_trajectory() {
+    sleep(35);
+    ROS_INFO("starting the trajectory");
+    std_msgs::String start;
+    start.data = "start segmentation";
+
+    // trajectory
+    for (int i=0; i<16; i++) {
+        if (i>4) {  // have to wait a bit for the monte carlo localization to start becoming accurate
+            start_segmentation_pub.publish(start);
+            sleep(2);
+        }
+        turn45_cw();
+    }
+}
 void simple_world_trajectory() {
-    sleep(25);
+    sleep(35);
+    ROS_INFO("starting the trajectory");
     std_msgs::String start_segmentation;
     start_segmentation.data = "start segmentation";
 
@@ -235,6 +283,7 @@ main (int argc, char **argv) {
     ros::init (argc, argv, "fetch_mover");
     ros::NodeHandle nh;
     ROS_INFO("starting circuit around the environment...");
+    tf_listener = new (tf::TransformListener);
 
     // Set up odom subscribers and various controller publishers
     ros::Subscriber sub = nh.subscribe ("/odom", 5, odom_cb);
@@ -244,7 +293,7 @@ main (int argc, char **argv) {
     point_head_pub = nh.advertise<std_msgs::String> ("/start_pointing_head", 5);
 
     // Start the trajectory
-    simple_world_trajectory();
+    full_circle_trajectory();
 
     // Spin
     ros::spin();

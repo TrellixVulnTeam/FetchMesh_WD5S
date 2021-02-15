@@ -64,14 +64,8 @@ bool close_to_cloud(std::vector<float> point, pcl::PointCloud<pcl::PointXYZ> &cl
 void export_mesh(std::vector<std::vector<float>> intersection_points);
 void start_cb(std_msgs::String start);
 void odom_cb(nav_msgs::Odometry odom);
-geometry_msgs::Pose2D current_pose;
 float transform_x, transform_y;
 tf::TransformListener *tf_listener = NULL;
-
-void odom_cb(nav_msgs::Odometry odom) {
-    current_pose.x = odom.pose.pose.position.x;
-    current_pose.y = odom.pose.pose.position.y;
-}
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     if (not start_segmentation) {
@@ -79,10 +73,6 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     }
 
     start_segmentation = false;
-
-    // Set the transform variables
-    transform_x = current_pose.x;
-    transform_y = current_pose.y;
 
     ROS_INFO("Starting segmentation...");
     // Convert from sensor_msgs::PointCloud2 to pcl::PCLPointCloud2
@@ -372,10 +362,6 @@ void export_mesh(std::vector<std::vector<float>> intersection_points) {
     // Convert all the vertices to geometry_msgs::Point
     for (int i=0; i<intersection_points.size(); i++) {
         vertices.push_back(toROSPoint(intersection_points[i]));
-
-//        // Correct for transform
-//        vertices[i].x += transform_x;
-//        vertices[i].y += transform_y;
     }
 
     // Construct each of the (vertices choose 3) triangles, put into polygons
@@ -513,7 +499,6 @@ int main(int argc, char **argv) {
 
     // Create a subscriber to tell script when to start segmentation, subscribe to /odom
     ros::Subscriber start_sub = nh.subscribe ("/start_segmentation", 5, start_cb);
-    ros::Subscriber odom_sub = nh.subscribe ("/odom", 5, odom_cb);
 
     // Create a ROS subscriber for the input point cloud
     ros::Subscriber sub = nh.subscribe ("/head_camera/depth_registered/points", 5, cloud_cb);

@@ -1,0 +1,15 @@
+<launch>
+    <node pkg="rosbag" type="play" name="player" output="screen" args="$(find fetch_mesh)/bags/laser_scans.bag"/>
+    <node pkg="gmapping" type="slam_gmapping" name="gmapping_thing" output="screen" >
+        <remap from="scan" to="/base_scan" />
+        <param name="odom_frame" value="/odom" />
+        <param name="base_frame" value="/base_link" />
+        <param name="angularUpdate" value="0.1"/>
+        <param name="linearUpdate" value="0.1"/>
+        <param name="lskip" value="10"/>
+        <param name="xmax" value="10"/>
+        <param name="ymax" value="10"/>
+        <param name="xmin" value="-10"/>
+        <param name="ymin" value="-10"/>
+    </node>
+</launch>
