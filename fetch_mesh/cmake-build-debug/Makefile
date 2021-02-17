@@ -214,19 +214,6 @@ move_fetch/fast:
 .PHONY : move_fetch/fast
 
 #=============================================================================
-# Target rules for targets named mesh_publisher
-
-# Build rule for target.
-mesh_publisher: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mesh_publisher
-.PHONY : mesh_publisher
-
-# fast build rule for target.
-mesh_publisher/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_publisher.dir/build.make CMakeFiles/mesh_publisher.dir/build
-.PHONY : mesh_publisher/fast
-
-#=============================================================================
 # Target rules for targets named topic_tools_generate_messages_nodejs
 
 # Build rule for target.
@@ -290,19 +277,6 @@ pcl_msgs_generate_messages_lisp: cmake_check_build_system
 pcl_msgs_generate_messages_lisp/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcl_msgs_generate_messages_lisp.dir/build.make CMakeFiles/pcl_msgs_generate_messages_lisp.dir/build
 .PHONY : pcl_msgs_generate_messages_lisp/fast
-
-#=============================================================================
-# Target rules for targets named cluster_extraction
-
-# Build rule for target.
-cluster_extraction: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cluster_extraction
-.PHONY : cluster_extraction
-
-# fast build rule for target.
-cluster_extraction/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cluster_extraction.dir/build.make CMakeFiles/cluster_extraction.dir/build
-.PHONY : cluster_extraction/fast
 
 #=============================================================================
 # Target rules for targets named pcl_msgs_generate_messages_cpp
@@ -1228,6 +1202,19 @@ actionlib_msgs_generate_messages_nodejs/fast:
 .PHONY : actionlib_msgs_generate_messages_nodejs/fast
 
 #=============================================================================
+# Target rules for targets named greedy_triangulation
+
+# Build rule for target.
+greedy_triangulation: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 greedy_triangulation
+.PHONY : greedy_triangulation
+
+# fast build rule for target.
+greedy_triangulation/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/greedy_triangulation.dir/build.make CMakeFiles/greedy_triangulation.dir/build
+.PHONY : greedy_triangulation/fast
+
+#=============================================================================
 # Target rules for targets named actionlib_msgs_generate_messages_eus
 
 # Build rule for target.
@@ -1396,59 +1383,32 @@ gtest_main/fast:
 	$(MAKE) $(MAKESILENT) -f gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build
 .PHONY : gtest_main/fast
 
-src/euclidean_cluster_extraction.o: src/euclidean_cluster_extraction.cpp.o
+src/greedy_triangulation.o: src/greedy_triangulation.cpp.o
 
-.PHONY : src/euclidean_cluster_extraction.o
-
-# target to build an object file
-src/euclidean_cluster_extraction.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cluster_extraction.dir/build.make CMakeFiles/cluster_extraction.dir/src/euclidean_cluster_extraction.cpp.o
-.PHONY : src/euclidean_cluster_extraction.cpp.o
-
-src/euclidean_cluster_extraction.i: src/euclidean_cluster_extraction.cpp.i
-
-.PHONY : src/euclidean_cluster_extraction.i
-
-# target to preprocess a source file
-src/euclidean_cluster_extraction.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cluster_extraction.dir/build.make CMakeFiles/cluster_extraction.dir/src/euclidean_cluster_extraction.cpp.i
-.PHONY : src/euclidean_cluster_extraction.cpp.i
-
-src/euclidean_cluster_extraction.s: src/euclidean_cluster_extraction.cpp.s
-
-.PHONY : src/euclidean_cluster_extraction.s
-
-# target to generate assembly for a file
-src/euclidean_cluster_extraction.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cluster_extraction.dir/build.make CMakeFiles/cluster_extraction.dir/src/euclidean_cluster_extraction.cpp.s
-.PHONY : src/euclidean_cluster_extraction.cpp.s
-
-src/mesh_publisher.o: src/mesh_publisher.cpp.o
-
-.PHONY : src/mesh_publisher.o
+.PHONY : src/greedy_triangulation.o
 
 # target to build an object file
-src/mesh_publisher.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_publisher.dir/build.make CMakeFiles/mesh_publisher.dir/src/mesh_publisher.cpp.o
-.PHONY : src/mesh_publisher.cpp.o
+src/greedy_triangulation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/greedy_triangulation.dir/build.make CMakeFiles/greedy_triangulation.dir/src/greedy_triangulation.cpp.o
+.PHONY : src/greedy_triangulation.cpp.o
 
-src/mesh_publisher.i: src/mesh_publisher.cpp.i
+src/greedy_triangulation.i: src/greedy_triangulation.cpp.i
 
-.PHONY : src/mesh_publisher.i
+.PHONY : src/greedy_triangulation.i
 
 # target to preprocess a source file
-src/mesh_publisher.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_publisher.dir/build.make CMakeFiles/mesh_publisher.dir/src/mesh_publisher.cpp.i
-.PHONY : src/mesh_publisher.cpp.i
+src/greedy_triangulation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/greedy_triangulation.dir/build.make CMakeFiles/greedy_triangulation.dir/src/greedy_triangulation.cpp.i
+.PHONY : src/greedy_triangulation.cpp.i
 
-src/mesh_publisher.s: src/mesh_publisher.cpp.s
+src/greedy_triangulation.s: src/greedy_triangulation.cpp.s
 
-.PHONY : src/mesh_publisher.s
+.PHONY : src/greedy_triangulation.s
 
 # target to generate assembly for a file
-src/mesh_publisher.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mesh_publisher.dir/build.make CMakeFiles/mesh_publisher.dir/src/mesh_publisher.cpp.s
-.PHONY : src/mesh_publisher.cpp.s
+src/greedy_triangulation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/greedy_triangulation.dir/build.make CMakeFiles/greedy_triangulation.dir/src/greedy_triangulation.cpp.s
+.PHONY : src/greedy_triangulation.cpp.s
 
 src/move_fetch.o: src/move_fetch.cpp.o
 
@@ -1654,22 +1614,18 @@ help:
 	@echo "... topic_tools_generate_messages_lisp"
 	@echo "... topic_tools_generate_messages_nodejs"
 	@echo "... topic_tools_generate_messages_py"
-	@echo "... cluster_extraction"
 	@echo "... gmock"
 	@echo "... gmock_main"
+	@echo "... greedy_triangulation"
 	@echo "... gtest"
 	@echo "... gtest_main"
-	@echo "... mesh_publisher"
 	@echo "... move_fetch"
 	@echo "... planar_segmentation"
 	@echo "... planar_segmentation_class"
 	@echo "... point_head"
-	@echo "... src/euclidean_cluster_extraction.o"
-	@echo "... src/euclidean_cluster_extraction.i"
-	@echo "... src/euclidean_cluster_extraction.s"
-	@echo "... src/mesh_publisher.o"
-	@echo "... src/mesh_publisher.i"
-	@echo "... src/mesh_publisher.s"
+	@echo "... src/greedy_triangulation.o"
+	@echo "... src/greedy_triangulation.i"
+	@echo "... src/greedy_triangulation.s"
 	@echo "... src/move_fetch.o"
 	@echo "... src/move_fetch.i"
 	@echo "... src/move_fetch.s"

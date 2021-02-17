@@ -80,12 +80,9 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     pcl_conversions::toPCL(*cloud_msg, *cloud2);
 
     // Remove Nans from the cloud with a pcl::PassThrough filter
-    // There might be some problem with this step
     pcl::PCLPointCloud2 filtered_cloud;
     pcl::PassThrough<pcl::PCLPointCloud2> filter (true);
     filter.setInputCloud(cloud2);
-    //bool organize = false;
-    //filter.setKeepOrganized(organize);
     filter.setFilterLimits(0, 20);
     filter.filter(filtered_cloud);
 
@@ -488,6 +485,10 @@ geometry_msgs::Point toROSPoint(std::vector<float> input) {
 void start_cb(std_msgs::String start) {
     ROS_INFO("starting up segmentation algorithm");
     start_segmentation = true;
+}
+
+pcl::PolygonMesh greedy_surface_reconstruction(pcl::PointCloud<pcl::PointXYZ>::Ptr pcd) {
+
 }
 
 int main(int argc, char **argv) {

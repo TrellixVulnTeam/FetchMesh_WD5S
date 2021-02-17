@@ -3,13 +3,11 @@
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/edit_cache.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/point_head.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/move_fetch.dir
-/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/mesh_publisher.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/topic_tools_generate_messages_nodejs.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/topic_tools_generate_messages_lisp.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/std_srvs_generate_messages_cpp.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/pcl_msgs_generate_messages_py.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/pcl_msgs_generate_messages_lisp.dir
-/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/cluster_extraction.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/pcl_msgs_generate_messages_cpp.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/nodelet_topic_tools_gencfg.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/topic_tools_generate_messages_eus.dir
@@ -85,6 +83,7 @@
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/topic_tools_generate_messages_py.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/tf2_msgs_generate_messages_py.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/actionlib_msgs_generate_messages_nodejs.dir
+/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/greedy_triangulation.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/actionlib_msgs_generate_messages_eus.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/actionlib_generate_messages_lisp.dir
 /home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/CMakeFiles/sensor_msgs_generate_messages_eus.dir

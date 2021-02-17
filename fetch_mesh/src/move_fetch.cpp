@@ -14,7 +14,7 @@ tf::TransformListener *tf_listener = NULL;
 
 //typedef actionlib::SimpleActionClient<control_msgs::PointHeadAction> Client;
 geometry_msgs::PoseStamped current_pose;
-ros::Publisher pub, pub2, start_segmentation_pub, point_head_pub;
+ros::Publisher pub, pub2, start_segmentation_pub, point_head_pub, start_reconstruction_pub;
 void move_fetch();
 void simple_world_trajectory();
 void odom_cb(nav_msgs::Odometry odom);
@@ -160,6 +160,27 @@ void full_circle_trajectory() {
         turn45_cw();
     }
 }
+
+// A trajectory to be used along with the greedy_triangulation script
+void greedy_triangulation_circle_trajectory() {
+    sleep(35);
+    ROS_INFO("starting the trajectory");
+    std_msgs::String start, finish;
+    start.data = "start segmentation";
+    finish.data = "export the mesh buddy";
+
+    for (int i=0; i<9; i++) {
+        ROS_INFO("Sending scan %d to mesh reconstruction script", i+1);
+        if (i>4) {  // have to wait a bit for the monte carlo localization to start becoming accurate
+            start_segmentation_pub.publish(start);
+            sleep(2);
+        }
+        turn45_cw();
+    }
+    sleep(5);
+    start_reconstruction_pub.publish(finish);
+}
+
 void simple_world_trajectory() {
     sleep(35);
     ROS_INFO("starting the trajectory");
@@ -291,9 +312,10 @@ main (int argc, char **argv) {
     pub2 = nh.advertise<std_msgs::String> ("/finished_trajectory", 4);
     start_segmentation_pub = nh.advertise<std_msgs::String> ("/start_segmentation", 5);
     point_head_pub = nh.advertise<std_msgs::String> ("/start_pointing_head", 5);
+    start_reconstruction_pub = nh.advertise<std_msgs::String> ("/start_reconstruction", 5);
 
     // Start the trajectory
-    full_circle_trajectory();
+    greedy_triangulation_circle_trajectory();
 
     // Spin
     ros::spin();

@@ -295,130 +295,6 @@
 					<DistClean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="mesh_publisher">
-				<Option output="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh/mesh_publisher" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh"/>
-				<Option object_output="./"/>
-				<Option type="1"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add option="-DROS_BUILD_SHARED_LIBS=1"/>
-					<Add option="-DROS_PACKAGE_NAME=&quot;fetch_mesh&quot;"/>
-					<Add option="-DROSCONSOLE_BACKEND_LOG4CXX"/>
-					<Add option="-DvtkFiltersFlowPaths_AUTOINIT=1(vtkFiltersParallelFlowPaths)"/>
-					<Add option="-DvtkIOExodus_AUTOINIT=1(vtkIOParallelExodus)"/>
-					<Add option="-DvtkIOGeometry_AUTOINIT=1(vtkIOMPIParallel)"/>
-					<Add option="-DvtkIOImage_AUTOINIT=1(vtkIOMPIImage)"/>
-					<Add option="-DvtkIOParallel_AUTOINIT=1(vtkIOMPIParallel)"/>
-					<Add option="-DvtkIOSQL_AUTOINIT=2(vtkIOMySQL,vtkIOPostgreSQL)"/>
-					<Add option="-DvtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL)"/>
-					<Add option="-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL)"/>
-					<Add option="-DvtkRenderingFreeType_AUTOINIT=2(vtkRenderingFreeTypeFontConfig,vtkRenderingMatplotlib)"/>
-					<Add option="-DvtkRenderingLIC_AUTOINIT=1(vtkRenderingParallelLIC)"/>
-					<Add option="-DvtkRenderingVolume_AUTOINIT=1(vtkRenderingVolumeOpenGL)"/>
-					<Add option="-DQT_WIDGETS_LIB"/>
-					<Add option="-DQT_GUI_LIB"/>
-					<Add option="-DQT_CORE_LIB"/>
-					<Add directory="/usr/include/vtk-6.3"/>
-					<Add directory="/usr/include/freetype2"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
-					<Add directory="/usr/include/python2.7"/>
-					<Add directory="/usr/include/hdf5/openmpi"/>
-					<Add directory="/usr/include/libxml2"/>
-					<Add directory="/usr/include/jsoncpp"/>
-					<Add directory="/usr/include/tcl"/>
-					<Add directory="/opt/ros/melodic/include"/>
-					<Add directory="/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"/>
-					<Add directory="/usr/include/eigen3"/>
-					<Add directory="/usr/include/pcl-1.8"/>
-					<Add directory="/usr/include/ni"/>
-					<Add directory="/usr/include/openni2"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtWidgets"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtGui"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtCore"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++"/>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 mesh_publisher"/>
-					<CompileFile command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="mesh_publisher/fast">
-				<Option output="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh/mesh_publisher" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh"/>
-				<Option object_output="./"/>
-				<Option type="1"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add option="-DROS_BUILD_SHARED_LIBS=1"/>
-					<Add option="-DROS_PACKAGE_NAME=&quot;fetch_mesh&quot;"/>
-					<Add option="-DROSCONSOLE_BACKEND_LOG4CXX"/>
-					<Add option="-DvtkFiltersFlowPaths_AUTOINIT=1(vtkFiltersParallelFlowPaths)"/>
-					<Add option="-DvtkIOExodus_AUTOINIT=1(vtkIOParallelExodus)"/>
-					<Add option="-DvtkIOGeometry_AUTOINIT=1(vtkIOMPIParallel)"/>
-					<Add option="-DvtkIOImage_AUTOINIT=1(vtkIOMPIImage)"/>
-					<Add option="-DvtkIOParallel_AUTOINIT=1(vtkIOMPIParallel)"/>
-					<Add option="-DvtkIOSQL_AUTOINIT=2(vtkIOMySQL,vtkIOPostgreSQL)"/>
-					<Add option="-DvtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL)"/>
-					<Add option="-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL)"/>
-					<Add option="-DvtkRenderingFreeType_AUTOINIT=2(vtkRenderingFreeTypeFontConfig,vtkRenderingMatplotlib)"/>
-					<Add option="-DvtkRenderingLIC_AUTOINIT=1(vtkRenderingParallelLIC)"/>
-					<Add option="-DvtkRenderingVolume_AUTOINIT=1(vtkRenderingVolumeOpenGL)"/>
-					<Add option="-DQT_WIDGETS_LIB"/>
-					<Add option="-DQT_GUI_LIB"/>
-					<Add option="-DQT_CORE_LIB"/>
-					<Add directory="/usr/include/vtk-6.3"/>
-					<Add directory="/usr/include/freetype2"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
-					<Add directory="/usr/include/python2.7"/>
-					<Add directory="/usr/include/hdf5/openmpi"/>
-					<Add directory="/usr/include/libxml2"/>
-					<Add directory="/usr/include/jsoncpp"/>
-					<Add directory="/usr/include/tcl"/>
-					<Add directory="/opt/ros/melodic/include"/>
-					<Add directory="/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"/>
-					<Add directory="/usr/include/eigen3"/>
-					<Add directory="/usr/include/pcl-1.8"/>
-					<Add directory="/usr/include/ni"/>
-					<Add directory="/usr/include/openni2"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtWidgets"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtGui"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtCore"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++"/>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 mesh_publisher/fast"/>
-					<CompileFile command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 			<Target title="topic_tools_generate_messages_nodejs">
 				<Option working_dir="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug"/>
 				<Option type="4"/>
@@ -464,130 +340,6 @@
 				<Option type="4"/>
 				<MakeCommands>
 					<Build command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 pcl_msgs_generate_messages_lisp"/>
-					<CompileFile command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="cluster_extraction">
-				<Option output="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh/cluster_extraction" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh"/>
-				<Option object_output="./"/>
-				<Option type="1"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add option="-DROS_BUILD_SHARED_LIBS=1"/>
-					<Add option="-DROS_PACKAGE_NAME=&quot;fetch_mesh&quot;"/>
-					<Add option="-DROSCONSOLE_BACKEND_LOG4CXX"/>
-					<Add option="-DvtkFiltersFlowPaths_AUTOINIT=1(vtkFiltersParallelFlowPaths)"/>
-					<Add option="-DvtkIOExodus_AUTOINIT=1(vtkIOParallelExodus)"/>
-					<Add option="-DvtkIOGeometry_AUTOINIT=1(vtkIOMPIParallel)"/>
-					<Add option="-DvtkIOImage_AUTOINIT=1(vtkIOMPIImage)"/>
-					<Add option="-DvtkIOParallel_AUTOINIT=1(vtkIOMPIParallel)"/>
-					<Add option="-DvtkIOSQL_AUTOINIT=2(vtkIOMySQL,vtkIOPostgreSQL)"/>
-					<Add option="-DvtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL)"/>
-					<Add option="-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL)"/>
-					<Add option="-DvtkRenderingFreeType_AUTOINIT=2(vtkRenderingFreeTypeFontConfig,vtkRenderingMatplotlib)"/>
-					<Add option="-DvtkRenderingLIC_AUTOINIT=1(vtkRenderingParallelLIC)"/>
-					<Add option="-DvtkRenderingVolume_AUTOINIT=1(vtkRenderingVolumeOpenGL)"/>
-					<Add option="-DQT_WIDGETS_LIB"/>
-					<Add option="-DQT_GUI_LIB"/>
-					<Add option="-DQT_CORE_LIB"/>
-					<Add directory="/usr/include/vtk-6.3"/>
-					<Add directory="/usr/include/freetype2"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
-					<Add directory="/usr/include/python2.7"/>
-					<Add directory="/usr/include/hdf5/openmpi"/>
-					<Add directory="/usr/include/libxml2"/>
-					<Add directory="/usr/include/jsoncpp"/>
-					<Add directory="/usr/include/tcl"/>
-					<Add directory="/opt/ros/melodic/include"/>
-					<Add directory="/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"/>
-					<Add directory="/usr/include/eigen3"/>
-					<Add directory="/usr/include/pcl-1.8"/>
-					<Add directory="/usr/include/ni"/>
-					<Add directory="/usr/include/openni2"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtWidgets"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtGui"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtCore"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++"/>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 cluster_extraction"/>
-					<CompileFile command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="cluster_extraction/fast">
-				<Option output="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh/cluster_extraction" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh"/>
-				<Option object_output="./"/>
-				<Option type="1"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add option="-DROS_BUILD_SHARED_LIBS=1"/>
-					<Add option="-DROS_PACKAGE_NAME=&quot;fetch_mesh&quot;"/>
-					<Add option="-DROSCONSOLE_BACKEND_LOG4CXX"/>
-					<Add option="-DvtkFiltersFlowPaths_AUTOINIT=1(vtkFiltersParallelFlowPaths)"/>
-					<Add option="-DvtkIOExodus_AUTOINIT=1(vtkIOParallelExodus)"/>
-					<Add option="-DvtkIOGeometry_AUTOINIT=1(vtkIOMPIParallel)"/>
-					<Add option="-DvtkIOImage_AUTOINIT=1(vtkIOMPIImage)"/>
-					<Add option="-DvtkIOParallel_AUTOINIT=1(vtkIOMPIParallel)"/>
-					<Add option="-DvtkIOSQL_AUTOINIT=2(vtkIOMySQL,vtkIOPostgreSQL)"/>
-					<Add option="-DvtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL)"/>
-					<Add option="-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL)"/>
-					<Add option="-DvtkRenderingFreeType_AUTOINIT=2(vtkRenderingFreeTypeFontConfig,vtkRenderingMatplotlib)"/>
-					<Add option="-DvtkRenderingLIC_AUTOINIT=1(vtkRenderingParallelLIC)"/>
-					<Add option="-DvtkRenderingVolume_AUTOINIT=1(vtkRenderingVolumeOpenGL)"/>
-					<Add option="-DQT_WIDGETS_LIB"/>
-					<Add option="-DQT_GUI_LIB"/>
-					<Add option="-DQT_CORE_LIB"/>
-					<Add directory="/usr/include/vtk-6.3"/>
-					<Add directory="/usr/include/freetype2"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
-					<Add directory="/usr/include/python2.7"/>
-					<Add directory="/usr/include/hdf5/openmpi"/>
-					<Add directory="/usr/include/libxml2"/>
-					<Add directory="/usr/include/jsoncpp"/>
-					<Add directory="/usr/include/tcl"/>
-					<Add directory="/opt/ros/melodic/include"/>
-					<Add directory="/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"/>
-					<Add directory="/usr/include/eigen3"/>
-					<Add directory="/usr/include/pcl-1.8"/>
-					<Add directory="/usr/include/ni"/>
-					<Add directory="/usr/include/openni2"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtWidgets"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtGui"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtCore"/>
-					<Add directory="/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++"/>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 cluster_extraction/fast"/>
 					<CompileFile command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
@@ -1457,6 +1209,130 @@
 					<DistClean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="greedy_triangulation">
+				<Option output="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh/greedy_triangulation" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DROS_BUILD_SHARED_LIBS=1"/>
+					<Add option="-DROS_PACKAGE_NAME=&quot;fetch_mesh&quot;"/>
+					<Add option="-DROSCONSOLE_BACKEND_LOG4CXX"/>
+					<Add option="-DvtkFiltersFlowPaths_AUTOINIT=1(vtkFiltersParallelFlowPaths)"/>
+					<Add option="-DvtkIOExodus_AUTOINIT=1(vtkIOParallelExodus)"/>
+					<Add option="-DvtkIOGeometry_AUTOINIT=1(vtkIOMPIParallel)"/>
+					<Add option="-DvtkIOImage_AUTOINIT=1(vtkIOMPIImage)"/>
+					<Add option="-DvtkIOParallel_AUTOINIT=1(vtkIOMPIParallel)"/>
+					<Add option="-DvtkIOSQL_AUTOINIT=2(vtkIOMySQL,vtkIOPostgreSQL)"/>
+					<Add option="-DvtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL)"/>
+					<Add option="-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL)"/>
+					<Add option="-DvtkRenderingFreeType_AUTOINIT=2(vtkRenderingFreeTypeFontConfig,vtkRenderingMatplotlib)"/>
+					<Add option="-DvtkRenderingLIC_AUTOINIT=1(vtkRenderingParallelLIC)"/>
+					<Add option="-DvtkRenderingVolume_AUTOINIT=1(vtkRenderingVolumeOpenGL)"/>
+					<Add option="-DQT_WIDGETS_LIB"/>
+					<Add option="-DQT_GUI_LIB"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add directory="/usr/include/vtk-6.3"/>
+					<Add directory="/usr/include/freetype2"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
+					<Add directory="/usr/include/python2.7"/>
+					<Add directory="/usr/include/hdf5/openmpi"/>
+					<Add directory="/usr/include/libxml2"/>
+					<Add directory="/usr/include/jsoncpp"/>
+					<Add directory="/usr/include/tcl"/>
+					<Add directory="/opt/ros/melodic/include"/>
+					<Add directory="/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/pcl-1.8"/>
+					<Add directory="/usr/include/ni"/>
+					<Add directory="/usr/include/openni2"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtWidgets"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtGui"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtCore"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 greedy_triangulation"/>
+					<CompileFile command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="greedy_triangulation/fast">
+				<Option output="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh/greedy_triangulation" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/devel/lib/fetch_mesh"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DROS_BUILD_SHARED_LIBS=1"/>
+					<Add option="-DROS_PACKAGE_NAME=&quot;fetch_mesh&quot;"/>
+					<Add option="-DROSCONSOLE_BACKEND_LOG4CXX"/>
+					<Add option="-DvtkFiltersFlowPaths_AUTOINIT=1(vtkFiltersParallelFlowPaths)"/>
+					<Add option="-DvtkIOExodus_AUTOINIT=1(vtkIOParallelExodus)"/>
+					<Add option="-DvtkIOGeometry_AUTOINIT=1(vtkIOMPIParallel)"/>
+					<Add option="-DvtkIOImage_AUTOINIT=1(vtkIOMPIImage)"/>
+					<Add option="-DvtkIOParallel_AUTOINIT=1(vtkIOMPIParallel)"/>
+					<Add option="-DvtkIOSQL_AUTOINIT=2(vtkIOMySQL,vtkIOPostgreSQL)"/>
+					<Add option="-DvtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL)"/>
+					<Add option="-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL)"/>
+					<Add option="-DvtkRenderingFreeType_AUTOINIT=2(vtkRenderingFreeTypeFontConfig,vtkRenderingMatplotlib)"/>
+					<Add option="-DvtkRenderingLIC_AUTOINIT=1(vtkRenderingParallelLIC)"/>
+					<Add option="-DvtkRenderingVolume_AUTOINIT=1(vtkRenderingVolumeOpenGL)"/>
+					<Add option="-DQT_WIDGETS_LIB"/>
+					<Add option="-DQT_GUI_LIB"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add directory="/usr/include/vtk-6.3"/>
+					<Add directory="/usr/include/freetype2"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
+					<Add directory="/usr/include/python2.7"/>
+					<Add directory="/usr/include/hdf5/openmpi"/>
+					<Add directory="/usr/include/libxml2"/>
+					<Add directory="/usr/include/jsoncpp"/>
+					<Add directory="/usr/include/tcl"/>
+					<Add directory="/opt/ros/melodic/include"/>
+					<Add directory="/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"/>
+					<Add directory="/usr/include/eigen3"/>
+					<Add directory="/usr/include/pcl-1.8"/>
+					<Add directory="/usr/include/ni"/>
+					<Add directory="/usr/include/openni2"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtWidgets"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtGui"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/qt5/QtCore"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 greedy_triangulation/fast"/>
+					<CompileFile command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j3 -f &quot;/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="actionlib_msgs_generate_messages_eus">
 				<Option working_dir="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/cmake-build-debug"/>
 				<Option type="4"/>
@@ -1878,11 +1754,8 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/src/euclidean_cluster_extraction.cpp">
-			<Option target="cluster_extraction"/>
-		</Unit>
-		<Unit filename="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/src/mesh_publisher.cpp">
-			<Option target="mesh_publisher"/>
+		<Unit filename="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/src/greedy_triangulation.cpp">
+			<Option target="greedy_triangulation"/>
 		</Unit>
 		<Unit filename="/home/jacob/catkin_ws/src/FetchMesh/fetch_mesh/src/move_fetch.cpp">
 			<Option target="move_fetch"/>

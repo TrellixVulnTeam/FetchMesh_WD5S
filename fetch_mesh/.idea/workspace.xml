@@ -27,6 +27,7 @@
       <config projectName="fetch_mesh" targetName="geometry_msgs_generate_messages_nodejs" />
       <config projectName="fetch_mesh" targetName="geometry_msgs_generate_messages_py" />
       <config projectName="fetch_mesh" targetName="actionlib_generate_messages_lisp" />
+      <config projectName="fetch_mesh" targetName="greedy_triangulation" />
       <config projectName="fetch_mesh" targetName="rosgraph_msgs_generate_messages_nodejs" />
       <config projectName="fetch_mesh" targetName="sensor_msgs_generate_messages_lisp" />
       <config projectName="fetch_mesh" targetName="tf2_msgs_generate_messages_lisp" />
@@ -87,11 +88,9 @@
       <config projectName="fetch_mesh" targetName="tf_generate_messages_nodejs" />
       <config projectName="fetch_mesh" targetName="point_head" />
       <config projectName="fetch_mesh" targetName="std_srvs_generate_messages_cpp" />
-      <config projectName="fetch_mesh" targetName="cluster_extraction" />
       <config projectName="fetch_mesh" targetName="sensor_msgs_generate_messages_nodejs" />
       <config projectName="fetch_mesh" targetName="bond_generate_messages_cpp" />
       <config projectName="fetch_mesh" targetName="actionlib_msgs_generate_messages_cpp" />
-      <config projectName="fetch_mesh" targetName="mesh_publisher" />
       <config projectName="fetch_mesh" targetName="std_srvs_generate_messages_lisp" />
       <config projectName="fetch_mesh" targetName="tf_generate_messages_lisp" />
       <config projectName="fetch_mesh" targetName="roscpp_generate_messages_lisp" />
@@ -105,7 +104,21 @@
   <component name="ChangeListManager">
     <list default="true" id="f4538a58-f5d6-4c42-9264-698de580e704" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/mesh_publisher.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/mesh_publisher.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/move_fetch.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/move_fetch.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/planar_segmentation.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/planar_segmentation.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/planar_segmentation_class.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/planar_segmentation_class.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/point_head.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/point_head.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/fetch_mesh.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/fetch_mesh.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/gtest/googlemock/CMakeFiles/gmock.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/gtest/googlemock/CMakeFiles/gmock.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/gtest/googlemock/CMakeFiles/gmock_main.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/gtest/googlemock/CMakeFiles/gmock_main.dir/progress.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/launch/simulation.launch" beforeDir="false" afterPath="$PROJECT_DIR$/launch/simulation.launch" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/move_fetch.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/move_fetch.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/planar_segmentation.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/planar_segmentation.cpp" afterDir="false" />
@@ -246,11 +259,6 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="cluster_extraction" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="fetch_mesh" TARGET_NAME="cluster_extraction" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="fetch_mesh" RUN_TARGET_NAME="cluster_extraction">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="download_extra_data" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="fetch_mesh" TARGET_NAME="download_extra_data" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -326,17 +334,17 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="greedy_triangulation" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="fetch_mesh" TARGET_NAME="greedy_triangulation" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="fetch_mesh" RUN_TARGET_NAME="greedy_triangulation">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="gtest" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="fetch_mesh" TARGET_NAME="gtest" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="gtest_main" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="fetch_mesh" TARGET_NAME="gtest_main" CONFIG_NAME="Debug">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="mesh_publisher" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="fetch_mesh" TARGET_NAME="mesh_publisher" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="fetch_mesh" RUN_TARGET_NAME="mesh_publisher">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -631,6 +639,11 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="CMake Application.actionlib_generate_messages_cpp" />
       <item itemvalue="CMake Application.actionlib_generate_messages_eus" />
@@ -648,7 +661,6 @@
       <item itemvalue="CMake Application.bond_generate_messages_nodejs" />
       <item itemvalue="CMake Application.bond_generate_messages_py" />
       <item itemvalue="CMake Application.clean_test_results" />
-      <item itemvalue="CMake Application.cluster_extraction" />
       <item itemvalue="CMake Application.download_extra_data" />
       <item itemvalue="CMake Application.doxygen" />
       <item itemvalue="CMake Application.dynamic_reconfigure_gencfg" />
@@ -662,7 +674,7 @@
       <item itemvalue="CMake Application.geometry_msgs_generate_messages_lisp" />
       <item itemvalue="CMake Application.geometry_msgs_generate_messages_nodejs" />
       <item itemvalue="CMake Application.geometry_msgs_generate_messages_py" />
-      <item itemvalue="CMake Application.mesh_publisher" />
+      <item itemvalue="CMake Application.greedy_triangulation" />
       <item itemvalue="CMake Application.move_fetch" />
       <item itemvalue="CMake Application.nodelet_generate_messages_cpp" />
       <item itemvalue="CMake Application.nodelet_generate_messages_eus" />
@@ -787,7 +799,8 @@
       <workItem from="1612988005037" duration="10907000" />
       <workItem from="1613158778780" duration="15207000" />
       <workItem from="1613328348699" duration="7203000" />
-      <workItem from="1613422327460" duration="617000" />
+      <workItem from="1613422327460" duration="8532000" />
+      <workItem from="1613432100666" duration="4507000" />
     </task>
     <servers />
   </component>

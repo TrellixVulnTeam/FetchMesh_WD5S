@@ -161,11 +161,13 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/fetch_mesh_node.cpp)
-add_executable(mesh_publisher src/mesh_publisher.cpp)
-target_link_libraries(mesh_publisher ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
-add_executable(cluster_extraction src/euclidean_cluster_extraction.cpp)
-target_link_libraries(cluster_extraction ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+# Old Scripts
+#add_executable(mesh_publisher src/mesh_publisher.cpp)
+#target_link_libraries(mesh_publisher ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+#
+#add_executable(cluster_extraction src/euclidean_cluster_extraction.cpp)
+#target_link_libraries(cluster_extraction ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 add_executable(planar_segmentation src/planar_segmentation.cpp)
 target_link_libraries(planar_segmentation ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
@@ -178,6 +180,9 @@ target_link_libraries(point_head ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 add_executable(planar_segmentation_class src/planar_segmentation_class.cpp)
 target_link_libraries(planar_segmentation_class ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+
+add_executable(greedy_triangulation src/greedy_triangulation.cpp)
+target_link_libraries(greedy_triangulation ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
