@@ -145,20 +145,36 @@ void full_circle_map() {
 }
 
 // turn 360 degrees, stop to after rotating 45 degrees
-void full_circle_trajectory() {
+void rseg_and_greedy_circle_trajectory() {
     sleep(35);
     ROS_INFO("starting the trajectory");
-    std_msgs::String start;
+    std_msgs::String start, finish;
     start.data = "start segmentation";
+    finish.data = "export the mesh buddy";
 
     // trajectory
-    for (int i=0; i<16; i++) {
+    for (int i=0; i<9; i++) {
+        ROS_INFO("Starting rotation %d", i + 1);
         if (i>4) {  // have to wait a bit for the monte carlo localization to start becoming accurate
             start_segmentation_pub.publish(start);
             sleep(2);
         }
         turn45_cw();
     }
+    sleep(5);
+    start_reconstruction_pub.publish(finish);
+}
+
+void greedy_rseg_simple_world_test_trajectory() {
+    sleep(35);
+    ROS_INFO("Starting the trajectory");
+    std_msgs::String start, finish;
+    start.data = "start segmentation";
+    finish.data = "export the mesh buddy";
+
+    start_segmentation_pub.publish(start);
+    sleep(5);
+    start_reconstruction_pub.publish(finish);
 }
 
 // A trajectory to be used along with the greedy_triangulation script
@@ -172,7 +188,7 @@ void greedy_triangulation_circle_trajectory() {
     for (int i=0; i<9; i++) {
         ROS_INFO("Sending scan %d to mesh reconstruction script", i+1);
         if (i>4) {  // have to wait a bit for the monte carlo localization to start becoming accurate
-            start_segmentation_pub.publish(start);
+            start_reconstruction_pub.publish(start);
             sleep(2);
         }
         turn45_cw();
@@ -315,7 +331,7 @@ main (int argc, char **argv) {
     start_reconstruction_pub = nh.advertise<std_msgs::String> ("/start_reconstruction", 5);
 
     // Start the trajectory
-    greedy_triangulation_circle_trajectory();
+    greedy_rseg_simple_world_test_trajectory();
 
     // Spin
     ros::spin();

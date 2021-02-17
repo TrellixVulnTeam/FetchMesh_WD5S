@@ -4,7 +4,7 @@
   <arg name="debug" default="false"/>
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
-  <arg name="world" default="$(find fetch_mesh)/world/cube_room.world"/>
+  <arg name="world" default="$(find fetch_mesh)/world/simple_world.world"/>
 
   <!-- Start Gazebo with a custom world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -34,7 +34,7 @@
   <!--  start up scripts-->
   <node name="fetch_mover" pkg="fetch_mesh" type="move_fetch" output="screen"/>
 <!--  <node name="look_at_cubes" pkg="fetch_mesh" type="fetch_mover.py" output="screen"/>-->
-<!--  <node name="mesh_publisher" pkg="fetch_mesh" type="planar_segmentation" output="screen"/>-->
-  <node name="mesh_generator" pkg="fetch_mesh" type="greedy_triangulation" output="screen"/>
+  <node name="mesh_publisher" pkg="fetch_mesh" type="planar_segmentation" output="screen"/>
+<!--  <node name="mesh_generator" pkg="fetch_mesh" type="greedy_triangulation" output="screen"/>-->
 
 </launch>

@@ -39,6 +39,8 @@
 #include <geometry_msgs/Pose2D.h>
 #include <tf/transform_listener.h>
 #include <tf2_ros/transform_listener.h>
+#include <pcl/surface/mls.h>
+#include <pcl/surface/gp3.h>
 
 //TODO:
 
@@ -50,7 +52,7 @@ std_msgs::Float32MultiArray toRosArray(std::vector<float> vertex);
 float distance (std::vector<float> v1, std::vector<float> v2);
 bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
                               pcl::ModelCoefficients plane_coeffs);
-ros::Publisher pub, pub2, pub3, pub4, pub5, pub6;
+ros::Publisher pub, pub2, pub3, pub4, pub5, pub6, mesh_pub;
 bool planar_seg(pcl::PointCloud<pcl::PointXYZ> &cloud);
 void project_onto_plane(pcl::ModelCoefficients plane, pcl::ModelCoefficients line,
         pcl::ModelCoefficients &projected_line);
@@ -66,6 +68,10 @@ void start_cb(std_msgs::String start);
 void odom_cb(nav_msgs::Odometry odom);
 float transform_x, transform_y;
 tf::TransformListener *tf_listener = NULL;
+pcl::PointCloud<pcl::PointXYZ>::Ptr detail_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+void export_mesh(pcl::PolygonMesh mesh);
+void reconstruct_cb(std_msgs::String reconstruct);
+void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg);
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     if (not start_segmentation) {
@@ -129,10 +135,50 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     return;
 }
 
+void reconstruct_cb(std_msgs::String reconstruct) {
+    ROS_INFO("Reconstructing the mesh...");
+
+    // generate normals of detail cloud, merge fields to get a PointNormal Cloud
+    // Normal estimation*
+    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;
+    pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+    tree->setInputCloud (detail_cloud);
+    n.setInputCloud (detail_cloud);
+    n.setSearchMethod (tree);
+    n.setKSearch (20);
+    n.compute (*normals);
+    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals (new pcl::PointCloud<pcl::PointNormal>);
+    pcl::concatenateFields (*detail_cloud, *normals, *cloud_with_normals);
+
+    // do greedy triangulation on mls_points to get a mesh output
+    ROS_INFO("Started Greedy triangulation on pointcloud of %d points ", (int)detail_cloud->points.size());
+    pcl::search::KdTree<pcl::PointNormal>::Ptr tree2 (new pcl::search::KdTree<pcl::PointNormal>);
+    tree2->setInputCloud (cloud_with_normals);
+    pcl::GreedyProjectionTriangulation<pcl::PointNormal> gp3;
+    pcl::PolygonMesh triangles;
+    gp3.setSearchRadius (0.025);
+    gp3.setMu (2.5);
+    gp3.setMaximumNearestNeighbors (100);
+    gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
+    gp3.setMinimumAngle(M_PI/18); // 10 degrees
+    gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp3.setNormalConsistency(false);
+    gp3.setInputCloud (cloud_with_normals);
+    gp3.setSearchMethod (tree2);
+    gp3.reconstruct (triangles);
+
+    // export the mesh to unity
+    ROS_INFO("Exporting the mesh to unity");
+    export_mesh(triangles);
+}
+
 bool planar_seg (pcl::PointCloud<pcl::PointXYZ> &cloud) {
     // Determine whether to extract the rectangle or to return false
     if ((int)cloud.size() < 100) {
         ROS_INFO("pointcloud too small, aborting.");
+        //ROS_INFO("Adding cloud of length %d to the detail cloud...", (int)cloud.points.size());
+        //*detail_cloud += cloud;
         return false;
     }
 
@@ -146,7 +192,6 @@ bool planar_seg (pcl::PointCloud<pcl::PointXYZ> &cloud) {
     ne.setSearchMethod (tree_n);
     ne.setRadiusSearch (0.03);
     ne.compute (*cloud_normals);
-
 
     // Intiate and set basic planar segmentation object with basic parameters
     pcl::SACSegmentationFromNormals<pcl::PointXYZ, pcl::Normal> seg;
@@ -172,7 +217,7 @@ bool planar_seg (pcl::PointCloud<pcl::PointXYZ> &cloud) {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ>);
     extract.filter (*cloud_plane);
 
-    // Find and publish the rectangle of best fit as a 2-triangle mesh
+    // Find and publish the rectangle of best fit as a relatively small mesh
     ROS_INFO("Constructing rectangle from subcloud with %d points", (int)cloud_plane->size());
     if (not publish_fitted_rectangle(*cloud_plane, coefficients_plane)) {
         return false;
@@ -236,6 +281,8 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
     ROS_INFO("Boundary cloud has %d points", (int)boundary_cloud->size());
     if (boundary_cloud->size() < 150) {
         ROS_INFO("Aborting linear segmentation, boundary too small");
+        *detail_cloud += cloud_plane;
+        ROS_INFO("Adding cloud of length %d to the detail cloud...", (int)cloud_plane.points.size());
         return false;
     }
 
@@ -264,9 +311,9 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
         extract.setInputCloud (boundary_cloud);
         extract.setIndices (line_inliers);
         extract.filter(updated_cloud);
-        ROS_INFO("updated cloud has %d points", updated_cloud.size());
+        ROS_INFO("updated cloud has %d points", (int)updated_cloud.size());
         *boundary_cloud = updated_cloud;
-        ROS_INFO("Segmented line %d, boundary now has %d points", counter, boundary_cloud->size());
+        ROS_INFO("Segmented line %d, boundary now has %d points", counter, (int)boundary_cloud->size());
         // Reset updated_cloud, line, line_inliers, MIGHT NEED TO RESET LINE_INLIERS
         updated_cloud.clear();
         line.values.clear();
@@ -279,6 +326,7 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
 
     if (line_equations.size() <= 2) {
         ROS_INFO("pointcloud boundary is degenerate, too few edges, aborting...");
+        *detail_cloud += cloud_plane;
         return false;
     }
 
@@ -308,12 +356,47 @@ bool publish_fitted_rectangle(pcl::PointCloud<pcl::PointXYZ> &cloud_plane,
 
     if (intersection_points.size() < 3) {
         ROS_INFO("pointcloud is degenerate, too few intersection points, aborting...");
+        ROS_INFO("Adding cloud of length %d to the detail cloud...", (int)cloud_plane.points.size());
+        *detail_cloud += cloud_plane;
         return false;
     }
 
-    // Export the mesh
+    // Export the mesh (this all used to be a method, but was moved out to have more control over sending detailed
+    // pointclouds to the greedy segmentation algorithm).
     ROS_INFO("Exporting the mesh...");
-    export_mesh(intersection_points);
+    shape_msgs::Mesh output;
+    std::vector<geometry_msgs::Point > vertices;
+    std::vector<shape_msgs::MeshTriangle > polygons;
+
+    // Convert all the vertices to geometry_msgs::Point
+    for (int i=0; i<intersection_points.size(); i++) {
+        vertices.push_back(toROSPoint(intersection_points[i]));
+    }
+
+    // Construct each of the (vertices choose 3) triangles, put into polygons
+    shape_msgs::MeshTriangle triangle;
+    for (int i=0; i<intersection_points.size()-2; i++) {
+        for (int j=i+1; j<intersection_points.size()-1; j++) {
+            for (int k=j+1; k<intersection_points.size(); k++) {
+                triangle.vertex_indices[0] = i;
+                triangle.vertex_indices[1] = j;
+                triangle.vertex_indices[2] = k;
+                polygons.push_back(triangle);
+            }
+        }
+    }
+
+    if (polygons.size() >= 30) {    // this is basically our measure for complexity at the moment
+        ROS_INFO("Too many triangles. Aborting");
+        ROS_INFO("Adding cloud of length %d to the detail cloud...", (int)cloud_plane.points.size());
+        *detail_cloud += cloud_plane;   // add pointcloud to the "detail cloud" since it is too complex
+    }
+
+    else {
+        output.triangles = polygons;
+        output.vertices = vertices;
+        pub.publish(output);
+    }
 
     return true;
 }
@@ -380,6 +463,43 @@ void export_mesh(std::vector<std::vector<float>> intersection_points) {
     output.triangles = polygons;
     output.vertices = vertices;
     pub.publish(output);
+}
+
+void export_mesh(pcl::PolygonMesh mesh) {
+    //Convert PCL PolygonMesh to shape_msgs/Mesh
+    shape_msgs::Mesh output;
+
+    // convert the mesh cloud to a pcl::PointXYZ type
+    pcl::PointCloud<pcl::PointXYZ> pcd;
+    pcl::fromPCLPointCloud2(mesh.cloud, pcd);
+
+    // Convert the vertices
+    std::vector<geometry_msgs::Point > verts;
+    for (int i=0; i<pcd.points.size(); i++) {
+        pcl::PointXYZ pcl_point = pcd.points[i];
+        geometry_msgs::Point ros_point;
+        ros_point.x = pcl_point.x;
+        ros_point.y = pcl_point.y;
+        ros_point.z = pcl_point.z;
+        verts.push_back(ros_point);
+    }
+
+    // Convert the polygons
+    std::vector<shape_msgs::MeshTriangle > polygons;
+    for ( int j=0; j<mesh.polygons.size(); j++ ) {
+        pcl::Vertices triangle = mesh.polygons[j]; //Indices are stored in triangle.vertices
+        shape_msgs::MeshTriangle ros_triangle;  //Indices are stored in vertex_indices, a uint32[3] array
+        ros_triangle.vertex_indices[0] = triangle.vertices[0];
+        ros_triangle.vertex_indices[1] = triangle.vertices[1];
+        ros_triangle.vertex_indices[2] = triangle.vertices[2];
+        polygons.push_back(ros_triangle);
+    }
+
+    // Publish the shape_msgs::Mesh
+    output.vertices = verts;
+    output.triangles = polygons;
+    ROS_INFO("Publishing the mesh...");
+    mesh_pub.publish(output);
 }
 
 void project_onto_plane(pcl::ModelCoefficients plane, pcl::ModelCoefficients line,
@@ -506,6 +626,10 @@ int main(int argc, char **argv) {
 
     // Create a ROS publisher for the output mesh
     pub = nh.advertise<shape_msgs::Mesh> ("fetch_mesh", 5);
+    mesh_pub = nh.advertise<shape_msgs::Mesh> ("big_mesh", 5);
+
+    // Create a subscriber to know when to do surface reconstruction
+    ros::Subscriber finish_sub = nh.subscribe("/start_reconstruction", 5, reconstruct_cb);
 
     // Largely uneeded subscribers to link up with the python visualizer script
     pub2 = nh.advertise<std_msgs::Float32MultiArray> ("rectangle_vertices", 5);
